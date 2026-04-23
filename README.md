@@ -1,6 +1,6 @@
 # Smart Hospital Decision & Resource Allocation System
 
-**Solution Challenge Project**
+**Solution Challenge Project 2026**
 
 A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for intelligent prioritization and hospital resource allocation—not a simple FIFO queue.
 
