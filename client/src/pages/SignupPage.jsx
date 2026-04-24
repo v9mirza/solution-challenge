@@ -38,7 +38,7 @@ export function SignupPage() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -49,7 +49,7 @@ export function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -61,14 +61,14 @@ export function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
           />
         </label>
         {error ? <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+          className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? "…" : "Create account"}
         </button>

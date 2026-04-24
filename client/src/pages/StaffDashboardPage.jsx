@@ -106,7 +106,7 @@ export function StaffDashboardPage() {
               <input
                 value={bedForm.icuTotal}
                 onChange={(e) => setBedForm((f) => ({ ...f, icuTotal: e.target.value }))}
-                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
               />
             </label>
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -114,7 +114,7 @@ export function StaffDashboardPage() {
               <input
                 value={bedForm.icuOccupied}
                 onChange={(e) => setBedForm((f) => ({ ...f, icuOccupied: e.target.value }))}
-                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
               />
             </label>
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -122,7 +122,7 @@ export function StaffDashboardPage() {
               <input
                 value={bedForm.generalTotal}
                 onChange={(e) => setBedForm((f) => ({ ...f, generalTotal: e.target.value }))}
-                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
               />
             </label>
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -130,14 +130,14 @@ export function StaffDashboardPage() {
               <input
                 value={bedForm.generalOccupied}
                 onChange={(e) => setBedForm((f) => ({ ...f, generalOccupied: e.target.value }))}
-                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
               />
             </label>
           </div>
           <div className="mt-4 flex items-center gap-3">
             <button
               type="submit"
-              className="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-700"
+              className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white transition hover:bg-teal-800"
             >
               Save
             </button>

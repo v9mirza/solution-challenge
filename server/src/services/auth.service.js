@@ -73,4 +73,26 @@ export const authService = {
       },
     };
   },
+
+  async getMe(userId) {
+    const user = await User.findById(userId).select(
+      "_id fullName email role hospitalId createdAt updatedAt"
+    );
+    if (!user) {
+      const err = new Error("User not found");
+      err.status = 404;
+      throw err;
+    }
+    return {
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        hospitalId: user.hospitalId,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    };
+  },
 };

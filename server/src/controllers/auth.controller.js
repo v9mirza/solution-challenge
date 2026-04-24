@@ -17,3 +17,12 @@ export async function login(req, res, next) {
     next(err);
   }
 }
+
+export async function me(req, res, next) {
+  try {
+    const result = await authService.getMe(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

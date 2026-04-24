@@ -9,6 +9,7 @@ import { PatientPortalPage } from "./pages/PatientPortalPage.jsx";
 import { PatientIntakePage } from "./pages/PatientIntakePage.jsx";
 import { PatientStatusPage } from "./pages/PatientStatusPage.jsx";
 import { StaffDashboardPage } from "./pages/StaffDashboardPage.jsx";
+import { ProfilePage } from "./pages/ProfilePage.jsx";
 import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 
 export default function App() {
@@ -30,6 +31,10 @@ export default function App() {
 
         <Route element={<ProtectedRoute roles={["staff", "admin"]} />}>
           <Route path="/staff" element={<StaffDashboardPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute roles={["patient", "staff", "admin"]} />}>
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

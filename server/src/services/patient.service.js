@@ -7,6 +7,37 @@ function toNumber(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function parseOptionalNumber(raw) {
+  if (raw === undefined || raw === null || raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function validateRange(name, value, min, max) {
+  if (value === null) return;
+  if (!Number.isFinite(value) || value < min || value > max) {
+    const err = new Error(`${name} must be between ${min} and ${max}`);
+    err.status = 400;
+    throw err;
+  }
+}
+
+function vitalSeverityBoost(patient) {
+  let boost = 0;
+  if (patient.oxygenSat !== null && patient.oxygenSat < 90) boost += 25;
+  if (patient.oxygenSat !== null && patient.oxygenSat >= 90 && patient.oxygenSat <= 93) boost += 10;
+  if (patient.temperature !== null && patient.temperature >= 39.5) boost += 15;
+  if (patient.temperature !== null && patient.temperature >= 38.5 && patient.temperature < 39.5) boost += 7;
+  if (patient.heartRate !== null && patient.heartRate >= 130) boost += 15;
+  if (patient.heartRate !== null && patient.heartRate >= 110 && patient.heartRate < 130) boost += 8;
+  if (patient.bpSystolic !== null && patient.bpSystolic < 90) boost += 20;
+  if (patient.bpSystolic !== null && patient.bpSystolic > 180) boost += 10;
+  if (patient.painLevel !== null && patient.painLevel >= 8) boost += 8;
+  if (patient.age !== null && patient.age >= 70) boost += 6;
+  if (patient.onsetHours !== null && patient.onsetHours <= 2) boost += 5;
+  return boost;
+}
+
 function getResourcePressure(hospitals) {
   if (!hospitals.length) return { icuPressure: 0, generalPressure: 0 };
 
@@ -53,6 +84,14 @@ function formatPatientListItem(p) {
     tokenId: p.tokenId,
     symptoms: p.symptoms,
     severity: p.severity,
+    age: p.age,
+    temperature: p.temperature,
+    heartRate: p.heartRate,
+    oxygenSat: p.oxygenSat,
+    bpSystolic: p.bpSystolic,
+    bpDiastolic: p.bpDiastolic,
+    onsetHours: p.onsetHours,
+    painLevel: p.painLevel,
     urgencyScore: p.urgencyScore,
     bedType: p.bedType,
     queuedAt: p.queuedAt,
@@ -94,6 +133,16 @@ export const patientService = {
         tokenId: patient.tokenId,
         symptoms: patient.symptoms,
         severity: patient.severity,
+        age: patient.age,
+        temperature: patient.temperature,
+        heartRate: patient.heartRate,
+        oxygenSat: patient.oxygenSat,
+        bpSystolic: patient.bpSystolic,
+        bpDiastolic: patient.bpDiastolic,
+        onsetHours: patient.onsetHours,
+        painLevel: patient.painLevel,
+        existingConditions: patient.existingConditions,
+        allergies: patient.allergies,
         urgencyScore: patient.urgencyScore,
         bedType: patient.bedType,
         queuedAt: patient.queuedAt,
@@ -103,7 +152,21 @@ export const patientService = {
   },
 
   async submitIntake(userId, body) {
-    const { symptoms, severity } = body;
+    const {
+      symptoms,
+      severity,
+      age,
+      temperature,
+      heartRate,
+      oxygenSat,
+      bpSystolic,
+      bpDiastolic,
+      onsetHours,
+      painLevel,
+      existingConditions,
+      allergies,
+    } = body;
+
     if (severity !== undefined) {
       const s = Number(severity);
       if (!Number.isFinite(s) || s < 0 || s > 100) {
@@ -113,6 +176,24 @@ export const patientService = {
       }
     }
 
+    const parsedAge = parseOptionalNumber(age);
+    const parsedTemperature = parseOptionalNumber(temperature);
+    const parsedHeartRate = parseOptionalNumber(heartRate);
+    const parsedOxygenSat = parseOptionalNumber(oxygenSat);
+    const parsedBpSystolic = parseOptionalNumber(bpSystolic);
+    const parsedBpDiastolic = parseOptionalNumber(bpDiastolic);
+    const parsedOnsetHours = parseOptionalNumber(onsetHours);
+    const parsedPainLevel = parseOptionalNumber(painLevel);
+
+    validateRange("age", parsedAge, 0, 120);
+    validateRange("temperature", parsedTemperature, 30, 45);
+    validateRange("heartRate", parsedHeartRate, 20, 260);
+    validateRange("oxygenSat", parsedOxygenSat, 40, 100);
+    validateRange("bpSystolic", parsedBpSystolic, 50, 260);
+    validateRange("bpDiastolic", parsedBpDiastolic, 30, 180);
+    validateRange("onsetHours", parsedOnsetHours, 0, 720);
+    validateRange("painLevel", parsedPainLevel, 0, 10);
+
     let patient = await Patient.findOne({ userId });
     if (!patient) {
       patient = await Patient.create({
@@ -120,11 +201,31 @@ export const patientService = {
         tokenId: randomBytes(12).toString("hex"),
         symptoms: symptoms ?? "",
         severity: severity ?? 0,
+        age: parsedAge,
+        temperature: parsedTemperature,
+        heartRate: parsedHeartRate,
+        oxygenSat: parsedOxygenSat,
+        bpSystolic: parsedBpSystolic,
+        bpDiastolic: parsedBpDiastolic,
+        onsetHours: parsedOnsetHours,
+        painLevel: parsedPainLevel,
+        existingConditions: existingConditions ?? "",
+        allergies: allergies ?? "",
         queuedAt: new Date(),
       });
     } else {
       if (symptoms !== undefined) patient.symptoms = symptoms;
       if (severity !== undefined) patient.severity = severity;
+      if (age !== undefined) patient.age = parsedAge;
+      if (temperature !== undefined) patient.temperature = parsedTemperature;
+      if (heartRate !== undefined) patient.heartRate = parsedHeartRate;
+      if (oxygenSat !== undefined) patient.oxygenSat = parsedOxygenSat;
+      if (bpSystolic !== undefined) patient.bpSystolic = parsedBpSystolic;
+      if (bpDiastolic !== undefined) patient.bpDiastolic = parsedBpDiastolic;
+      if (onsetHours !== undefined) patient.onsetHours = parsedOnsetHours;
+      if (painLevel !== undefined) patient.painLevel = parsedPainLevel;
+      if (existingConditions !== undefined) patient.existingConditions = existingConditions;
+      if (allergies !== undefined) patient.allergies = allergies;
       patient.queuedAt = patient.queuedAt || new Date();
     }
 
@@ -134,8 +235,11 @@ export const patientService = {
     const hospitals = await Hospital.find().exec();
     const { icuPressure, generalPressure } = getResourcePressure(hospitals);
 
+    const vitalsBoost = vitalSeverityBoost(patient);
+    const derivedSeverity = Math.min(100, Number(patient.severity || 0) + vitalsBoost);
+
     const { score, explanation, effectiveSeverity } = computePriorityScore({
-      severity: patient.severity,
+      severity: derivedSeverity,
       symptoms: patient.symptoms,
       waitMinutes,
       icuPressure,
@@ -152,6 +256,8 @@ export const patientService = {
     return {
       patientId: patient._id,
       tokenId: patient.tokenId,
+      severity: patient.severity,
+      vitalsBoost,
       urgencyScore: patient.urgencyScore,
       bedType: patient.bedType,
       assignedHospitalId: patient.assignedHospitalId,

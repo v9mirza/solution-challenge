@@ -4,7 +4,7 @@ import { parseJwtPayload } from "../lib/jwt.js";
 
 function navClass(isActive) {
   return `rounded-md px-3 py-2 text-sm transition ${
-    isActive ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+    isActive ? "bg-teal-900 text-white" : "text-slate-700 hover:bg-teal-50 hover:text-teal-900"
   }`;
 }
 
@@ -58,9 +58,14 @@ export function Layout() {
             </NavLink>
           )}
           {token && (
+              <NavLink to="/profile" className={({ isActive }) => navClass(isActive)}>
+              Profile
+            </NavLink>
+          )}
+          {token && (
               <button
                 type="button"
-                className="rounded-md px-3 py-2 text-sm text-indigo-700 transition hover:bg-indigo-50"
+                className="rounded-md px-3 py-2 text-sm text-teal-700 transition hover:bg-teal-50"
                 onClick={logout}
               >
               Log out

@@ -13,6 +13,7 @@ apiRouter.get("/health", (_req, res) => {
 
 apiRouter.post("/auth/register", auth.register);
 apiRouter.post("/auth/login", auth.login);
+apiRouter.get("/auth/me", requireAuth, auth.me);
 
 apiRouter.get("/patients", requireAuth, requireRoles("staff", "admin"), patient.list);
 apiRouter.get("/patients/me", requireAuth, requireRoles("patient"), patient.getMe);
