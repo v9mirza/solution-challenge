@@ -133,13 +133,14 @@ export const patientService = {
     const hospitals = await Hospital.find().exec();
     const { icuPressure, generalPressure } = getResourcePressure(hospitals);
 
-    const { score, explanation } = computePriorityScore({
+    const { score, explanation, effectiveSeverity } = computePriorityScore({
       severity: patient.severity,
+      symptoms: patient.symptoms,
       waitMinutes,
       icuPressure,
       generalPressure,
     });
-    const bedType = suggestBedType({ severity: patient.severity });
+    const bedType = suggestBedType({ severity: effectiveSeverity });
     const assignedHospitalId = await assignHospitalForBedType(bedType);
 
     patient.urgencyScore = score;

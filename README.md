@@ -107,6 +107,13 @@ After any account exists, use **Log in** with that email and password; the app r
 
    API default: `http://localhost:5000` — health: `GET /api/health`
 
+   Optional (single-hospital setup): seed one default hospital
+
+   ```bash
+   cd server
+   npm run seed:hospital
+   ```
+
 2. **Client**
 
    ```bash

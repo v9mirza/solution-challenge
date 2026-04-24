@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "seed:hospital": "node src/scripts/seedHospital.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
