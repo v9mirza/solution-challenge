@@ -2,11 +2,11 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { getAuthToken, setAuthToken } from "../lib/api.js";
 import { parseJwtPayload } from "../lib/jwt.js";
 
-const linkStyle = ({ isActive }) => ({
-  fontWeight: isActive ? 600 : 400,
-  marginRight: "1rem",
-  color: "inherit",
-});
+function navClass(isActive) {
+  return `rounded-md px-3 py-2 text-sm transition ${
+    isActive ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+  }`;
+}
 
 export function Layout() {
   const navigate = useNavigate();
@@ -19,51 +19,57 @@ export function Layout() {
   }
 
   return (
-    <div className="layout">
-      <header className="layout-header">
-        <NavLink to="/" style={linkStyle} end>
-          <strong>Smart Hospital</strong>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
+          <NavLink to="/" className="mr-2 text-xl font-semibold tracking-tight" end>
+            Smart Hospital
         </NavLink>
-        <nav>
-          <NavLink to="/" end style={linkStyle}>
+          <nav className="flex flex-wrap items-center gap-2">
+            <NavLink to="/" end className={({ isActive }) => navClass(isActive)}>
             Home
           </NavLink>
           {!token && (
             <>
-              <NavLink to="/login" style={linkStyle}>
+                <NavLink to="/login" className={({ isActive }) => navClass(isActive)}>
                 Log in
               </NavLink>
-              <NavLink to="/signup" style={linkStyle}>
+                <NavLink to="/signup" className={({ isActive }) => navClass(isActive)}>
                 Sign up
               </NavLink>
             </>
           )}
           {role === "patient" && (
             <>
-              <NavLink to="/patient" style={linkStyle}>
+                <NavLink to="/patient" className={({ isActive }) => navClass(isActive)}>
                 Patient
               </NavLink>
-              <NavLink to="/patient/intake" style={linkStyle}>
+                <NavLink to="/patient/intake" className={({ isActive }) => navClass(isActive)}>
                 Intake
               </NavLink>
-              <NavLink to="/patient/status" style={linkStyle}>
+                <NavLink to="/patient/status" className={({ isActive }) => navClass(isActive)}>
                 Status
               </NavLink>
             </>
           )}
           {(role === "staff" || role === "admin") && (
-            <NavLink to="/staff" style={linkStyle}>
+              <NavLink to="/staff" className={({ isActive }) => navClass(isActive)}>
               Staff
             </NavLink>
           )}
           {token && (
-            <button type="button" className="btn-link" onClick={logout}>
+              <button
+                type="button"
+                className="rounded-md px-3 py-2 text-sm text-indigo-700 transition hover:bg-indigo-50"
+                onClick={logout}
+              >
               Log out
             </button>
           )}
         </nav>
+        </div>
       </header>
-      <main className="layout-main">
+      <main className="mx-auto w-full max-w-6xl px-4 py-8">
         <Outlet />
       </main>
     </div>
