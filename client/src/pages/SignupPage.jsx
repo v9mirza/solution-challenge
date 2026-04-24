@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, setAuthToken } from "../lib/api.js";
 
 export function SignupPage() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +15,7 @@ export function SignupPage() {
     setError("");
     setLoading(true);
     try {
-      const data = await api("/auth/register", { method: "POST", body: { email, password } });
+      const data = await api("/auth/register", { method: "POST", body: { fullName, email, password } });
       setAuthToken(data.token);
       navigate("/patient/status", { replace: true });
     } catch (err) {
@@ -29,6 +30,17 @@ export function SignupPage() {
       <h1 className="text-3xl font-bold tracking-tight">Sign up</h1>
       <p className="mt-1 text-sm text-slate-500">Creates a patient account.</p>
       <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-4">
+        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+          Full name
+          <input
+            type="text"
+            autoComplete="name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-indigo-200 transition focus:border-indigo-500 focus:ring"
+          />
+        </label>
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Email
           <input

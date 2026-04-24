@@ -23,14 +23,15 @@ function signToken(user) {
 }
 
 export const authService = {
-  async register({ email, password }) {
-    if (!email || !password) {
-      const err = new Error("email and password required");
+  async register({ fullName, email, password }) {
+    if (!fullName || !email || !password) {
+      const err = new Error("fullName, email and password required");
       err.status = 400;
       throw err;
     }
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await User.create({
+      fullName,
       email,
       passwordHash,
       role: "patient",
@@ -38,7 +39,7 @@ export const authService = {
     const token = signToken(user);
     return {
       token,
-      user: { id: user._id, email: user.email, role: user.role },
+      user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role },
     };
   },
 
@@ -65,6 +66,7 @@ export const authService = {
       token,
       user: {
         id: user._id,
+        fullName: user.fullName,
         email: user.email,
         role: user.role,
         hospitalId: user.hospitalId,

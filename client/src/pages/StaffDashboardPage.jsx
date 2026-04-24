@@ -157,6 +157,7 @@ export function StaffDashboardPage() {
                 <tr className="border-b border-slate-200 text-left text-slate-600">
                   <th className="px-3 py-2 font-semibold">Urgency</th>
                   <th className="px-3 py-2 font-semibold">Severity</th>
+                  <th className="px-3 py-2 font-semibold">Name</th>
                   <th className="px-3 py-2 font-semibold">Email</th>
                   <th className="px-3 py-2 font-semibold">Bed</th>
                   <th className="px-3 py-2 font-semibold">Hospital</th>
@@ -167,6 +168,7 @@ export function StaffDashboardPage() {
                   <tr key={p.id} className="border-b border-slate-100">
                     <td className="px-3 py-2">{p.urgencyScore}</td>
                     <td className="px-3 py-2">{p.severity}</td>
+                    <td className="px-3 py-2">{p.fullName ?? "—"}</td>
                     <td className="px-3 py-2">{p.email ?? "—"}</td>
                     <td className="px-3 py-2 capitalize">{p.bedType}</td>
                     <td className="px-3 py-2">{p.hospital?.name ?? "—"}</td>

@@ -48,6 +48,7 @@ async function assignHospitalForBedType(bedType) {
 function formatPatientListItem(p) {
   return {
     id: p._id,
+    fullName: p.userId?.fullName ?? null,
     email: p.userId?.email ?? null,
     tokenId: p.tokenId,
     symptoms: p.symptoms,
@@ -62,7 +63,7 @@ function formatPatientListItem(p) {
 export const patientService = {
   async listForStaff(user) {
     const q = Patient.find()
-      .populate("userId", "email")
+      .populate("userId", "fullName email")
       .populate("assignedHospitalId", "name")
       .sort({ urgencyScore: -1, queuedAt: 1 });
 
@@ -74,7 +75,7 @@ export const patientService = {
       const patients = await Patient.find({
         $or: [{ assignedHospitalId: user.hospitalId }, { assignedHospitalId: null }],
       })
-        .populate("userId", "email")
+        .populate("userId", "fullName email")
         .populate("assignedHospitalId", "name")
         .sort({ urgencyScore: -1, queuedAt: 1 })
         .exec();
