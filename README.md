@@ -2,43 +2,49 @@
 
 **Solution Challenge Project 2026**
 
-A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for intelligent prioritization and hospital resource allocation—not a simple FIFO queue.
+A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for real-time triage, dynamic prioritization, and capacity-aware bed decisions. This is a decision-support system, not a static FIFO queue.
 
 ---
 
 ## Contents
 
 - [Project overview](#project-overview)
-- [Tech stack & layout](#tech-stack--layout)
-- [Users, roles, login & sign-up](#users-roles-login--sign-up)
+- [Current architecture](#current-architecture)
+- [Roles, auth, and account model](#roles-auth-and-account-model)
+- [Key capabilities](#key-capabilities)
+- [API overview](#api-overview)
 - [Run locally](#run-locally)
-- [Core objectives & features](#core-objectives--features)
-- [System workflow](#system-workflow)
-- [Impact & future scope](#impact--future-scope)
+- [Workflow](#workflow)
+- [Notes and roadmap](#notes-and-roadmap)
 
 ---
 
 ## Project overview
 
-This project is a **real-time decision system** that optimizes how hospitals prioritize patients and use limited resources.
+The system improves triage operations by combining:
 
-Traditional tools often use static, first-come-first-served queues and ignore urgency and live capacity. That can delay critical cases and waste beds.
+- patient symptom/vitals intake
+- explainable urgency scoring
+- bed-type suggestion (`icu` / `general` / `none`)
+- live capacity pressure inputs
+- role-based operations for frontline staff
 
-This system uses a **dynamic decision engine** that continuously weighs patient severity and hospital capacity.
-
-**This is not a queue manager.**  
-**It is a decision engine for prioritization and allocation.**
+Instead of simple first-come-first-served ordering, patients are continuously ranked by urgency context.
 
 ---
 
-## Tech stack & layout
+## Current architecture
 
-| Layer    | Location        | Notes                          |
-| -------- | --------------- | ------------------------------ |
-| API      | `server/`       | Express, JWT, Mongoose         |
-| Frontend | `client/`       | Vite, React, React Router      |
+### Stack
 
-```
+| Layer | Location | Notes |
+| --- | --- | --- |
+| API | `server/` | Express, JWT, Mongoose |
+| Frontend | `client/` | Vite, React, React Router |
+
+### Project layout
+
+```text
 solution-challenge/
 ├── client/src/          # pages, components, lib/api.js
 ├── server/src/          # routes, controllers, services, models, engine/
@@ -46,149 +52,186 @@ solution-challenge/
 └── server/.env.example  # PORT, MONGODB_URI, JWT_SECRET
 ```
 
+### Single-capacity model (current)
+
+The project now uses a **single system-wide capacity state** (no multi-hospital model):
+
+- one `SystemState` document stores:
+  - `icuTotal`, `icuOccupied`
+  - `generalTotal`, `generalOccupied`
+- staff updates this via `/api/capacity`
+
 ---
 
-## Users, roles, login & sign-up
+## Roles, auth, and account model
 
-### How many kinds of users?
+There are **2 roles**:
 
-The database supports **three roles**:
+| Role | Purpose |
+| --- | --- |
+| `user` | patient-facing actions (intake + status view) |
+| `staff` | operations, queue control, capacity management, staff governance |
 
-| Role       | Purpose |
-| ---------- | ------- |
-| **patient** | Submit symptoms, see status / token / queue-related data |
-| **staff**   | Operate one hospital: patient list, bed counts |
-| **admin**   | Broader access (e.g. all hospitals in the API) |
+### Auth flow
 
-There is **one shared login** (`POST /api/auth/login`). The **JWT** stores `role` and, for staff, `hospitalId`. The API enforces **RBAC** (e.g. patient-only routes vs staff/admin routes).
+- shared login endpoint for both roles: `POST /api/auth/login`
+- public signup endpoint creates `user` only: `POST /api/auth/register`
+- JWT carries role for route protection
 
-### Who can sign up on the website?
+### Staff account creation
 
-**Only patients.**
+Staff accounts are created by staff through protected endpoints:
 
-- The **Sign up** page calls `POST /api/auth/register`.
-- That endpoint **always** creates a user with role **`patient`**.
-- You can have **many patient accounts** (each needs a unique email and password).
+- `POST /api/staff/users` (alias: `POST /api/admin/users`)
 
-### How do staff or admin accounts exist?
+Public staff signup is intentionally not exposed.
 
-They are **not** created through the public sign-up flow.
+---
 
-Create them **in MongoDB** (manual insert, script, or a future “admin creates user” feature):
+## Key capabilities
 
-- Set `role` to `staff` or `admin`.
-- For **staff**, set **`hospitalId`** to a real hospital document’s `_id`. Without it, hospital/dashboard APIs may return **403** or empty data.
+### User features
 
-### Summary
+- sign up and log in
+- submit/update intake data (symptoms + vitals)
+- view:
+  - token
+  - urgency score
+  - suggested bed type
+  - lifecycle status
+  - staff note
 
-| Role    | Typical creation |
-| ------- | ---------------- |
-| Patient | **Sign up** in the app (or insert in DB) |
-| Staff   | **Insert/seed** in DB + `hospitalId` |
-| Admin   | **Insert/seed** in DB |
+### Staff features
 
-After any account exists, use **Log in** with that email and password; the app redirects by role (e.g. patient → portal, staff/admin → dashboard).
+- view prioritized queue
+- update global capacity (with validation + auto-capping)
+- patient lifecycle actions:
+  - `waiting`, `in_progress`, `admitted`, `discharged`, `cancelled`
+- add/update patient staff notes
+- apply/clear manual priority override with reason
+- staff governance:
+  - create staff users
+  - enable/disable staff users
+  - reset staff password (marks `mustResetPassword`)
+- reporting:
+  - filter queue
+  - export CSV report
+
+### Safety and validation
+
+- capacity fields require non-negative integers
+- occupied beds are auto-capped when totals are reduced
+- disabled staff accounts cannot log in
+
+---
+
+## API overview
+
+### Health
+
+- `GET /api/health`
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+### User intake/status
+
+- `POST /api/patients/me/intake`
+- `GET /api/patients/me`
+
+### Staff queue operations
+
+- `GET /api/patients`
+- `GET /api/patients/export.csv`
+- `PATCH /api/patients/:id/lifecycle`
+- `PATCH /api/patients/:id/override`
+
+Supported patient list query params:
+
+- `search`
+- `bedType` (`icu`, `general`, `none`)
+- `lifecycleStatus`
+- `minUrgency`
+
+### Capacity
+
+- `GET /api/capacity`
+- `PATCH /api/capacity`
+
+### Staff governance
+
+- `GET /api/staff/users` (alias: `/api/admin/users`)
+- `POST /api/staff/users` (alias: `/api/admin/users`)
+- `PATCH /api/staff/users/:id/active`
+- `POST /api/staff/users/:id/reset-password`
 
 ---
 
 ## Run locally
 
-**Requirements:** Node.js 18+, MongoDB (optional for API start; DB features need `MONGODB_URI`).
+**Requirements**
 
-1. **Server**
+- Node.js 18+
+- MongoDB URI in `server/.env`
 
-   ```bash
-   cd server
-   cp .env.example .env
-   # Edit .env: MONGODB_URI, JWT_SECRET
-   npm install
-   npm run dev
-   ```
+### 1) Server
 
-   API default: `http://localhost:5000` — health: `GET /api/health`
+```bash
+cd server
+cp .env.example .env
+# set MONGODB_URI and JWT_SECRET
+npm install
+npm run dev
+```
 
-   Optional (single-hospital setup): seed one default hospital
+Default API: `http://localhost:5000`
 
-   ```bash
-   cd server
-   npm run seed:hospital
-   ```
+Optional migration script (legacy role normalization):
 
-2. **Client**
+```bash
+npm run migrate:roles
+```
 
-   ```bash
-   cd client
-   cp .env.example .env
-   # VITE_API_URL=http://localhost:5000/api
-   npm install
-   npm run dev
-   ```
+### 2) Client
 
-   App default: `http://localhost:5173`
+```bash
+cd client
+cp .env.example .env
+# VITE_API_URL=http://localhost:5000/api
+npm install
+npm run dev
+```
 
----
-
-## Core objectives & features
-
-### Core objectives
-
-- Prioritize by **urgency**, not only arrival time  
-- Allocate resources **efficiently and fairly**  
-- Keep decisions **consistent and explainable**  
-
-### Key functionalities
-
-1. **Intelligent priority engine** — Severity, waiting time, resource pressure, optional AI-assisted urgency, explainable output  
-2. **Smart bed allocation** — ICU / general, condition + availability, avoid over-allocation  
-3. **Dynamic queue** — Non-FIFO ordering, emergency rules, reshuffling as state changes  
-4. **Live analytics (minimal)** — Bed/ICU load, basic flow, simple response-time style metrics  
-5. **User & patient management** — Profiles, symptoms, **RBAC**  
-6. **Lightweight tokens** — Patient token id, queue tracking  
-
-### Role capabilities (product view)
-
-- **Patient:** submit symptoms and details; view priority status, assigned hospital, queue-related status  
-- **Staff:** manage queue context, update bed availability, view decisions (as implemented in API/UI)  
-- **Admin (evolving):** system-wide configuration and monitoring (roadmap)  
+Default app URL: `http://localhost:5173`
 
 ---
 
-## System workflow
+## Workflow
 
-1. Patient enters data (symptoms and details)  
-2. System calculates **priority score**  
-3. Patient enters the **dynamic priority queue**  
-4. System assigns **hospital** and **bed** (ICU / general) where applicable  
-5. System **updates continuously** as patients, conditions, and resources change  
-
----
-
-## Key advantages
-
-- Real-time adaptability  
-- Fairer, optimized prioritization  
-- Less manual sorting under pressure  
-- Transparent, explainable rules  
-- Scalable to multiple hospitals  
+1. `user` submits intake data.
+2. Engine computes urgency score and bed suggestion.
+3. Staff dashboard displays urgency-ranked queue.
+4. Staff can:
+   - adjust lifecycle status
+   - attach notes
+   - apply manual override (with reason)
+5. Capacity updates and queue operations continue in real-time workflow loops.
 
 ---
 
-## Impact & future scope
+## Notes and roadmap
 
-### Potential impact
+### Current state
 
-- Faster help for critical patients  
-- Better use of beds and ICU capacity  
-- More consistent decisions under load  
+- single-capacity model is active
+- no multi-hospital routing in current implementation
 
-### Future scope
+### Possible next upgrades
 
-- Overload prediction  
-- Multi-hospital / multi-city rollout  
-- AI-based demand forecasting  
-
----
-
-## Conclusion
-
-This project moves healthcare workflow from **static and reactive** to **dynamic and intelligent**, so the right patient gets the right level of care with clearer, data-driven prioritization.
+- richer audit timeline (who changed what and when)
+- patient assignment timelines and SLA tracking
+- notifications for critical threshold breaches
+- analytics dashboards for throughput and wait-time trends

@@ -72,6 +72,10 @@ export function PatientStatusPage() {
         <dd>{p.severity}</dd>
         <dt className="font-semibold text-slate-700">Bed</dt>
         <dd className="capitalize">{p.bedType}</dd>
+        <dt className="font-semibold text-slate-700">Status</dt>
+        <dd className="capitalize">{(p.lifecycleStatus || "waiting").replace("_", " ")}</dd>
+        <dt className="font-semibold text-slate-700">Staff note</dt>
+        <dd>{p.staffNote || "—"}</dd>
         <dt className="font-semibold text-slate-700">Queued</dt>
         <dd>{p.queuedAt ? new Date(p.queuedAt).toLocaleString() : "—"}</dd>
         <dt className="font-semibold text-slate-700">Symptoms</dt>
