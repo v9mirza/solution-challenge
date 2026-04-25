@@ -20,7 +20,6 @@ export function requireAuth(req, res, next) {
     req.user = {
       id: payload.sub,
       role: normalizeRole(payload.role),
-      hospitalId: payload.hospitalId ?? null,
     };
     return next();
   } catch {

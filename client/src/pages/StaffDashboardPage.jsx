@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api.js";
 
 export function StaffDashboardPage() {
-  const [hospitals, setHospitals] = useState([]);
+  const [capacity, setCapacity] = useState(null);
   const [patients, setPatients] = useState([]);
+  const [staffUsers, setStaffUsers] = useState([]);
   const [error, setError] = useState("");
   const [bedForm, setBedForm] = useState({
     icuTotal: "",
@@ -12,21 +13,30 @@ export function StaffDashboardPage() {
     generalOccupied: "",
   });
   const [bedMessage, setBedMessage] = useState("");
+  const [queueSearch, setQueueSearch] = useState("");
+  const [queueBedType, setQueueBedType] = useState("all");
+  const [queueUrgencyMin, setQueueUrgencyMin] = useState("");
+  const [staffForm, setStaffForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+  const [staffMessage, setStaffMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
   async function load() {
     setError("");
     try {
-      const [hRes, pRes] = await Promise.all([api("/hospitals"), api("/patients")]);
-      setHospitals(hRes.hospitals || []);
+      const [cRes, pRes, uRes] = await Promise.all([api("/capacity"), api("/patients"), api("/staff/users")]);
+      setCapacity(cRes.capacity || null);
       setPatients(pRes.patients || []);
-      const h = hRes.hospitals?.[0];
-      if (h) {
+      setStaffUsers(uRes.users || []);
+      if (cRes.capacity) {
         setBedForm({
-          icuTotal: String(h.icuTotal ?? ""),
-          icuOccupied: String(h.icuOccupied ?? ""),
-          generalTotal: String(h.generalTotal ?? ""),
-          generalOccupied: String(h.generalOccupied ?? ""),
+          icuTotal: String(cRes.capacity.icuTotal ?? ""),
+          icuOccupied: String(cRes.capacity.icuOccupied ?? ""),
+          generalTotal: String(cRes.capacity.generalTotal ?? ""),
+          generalOccupied: String(cRes.capacity.generalOccupied ?? ""),
         });
       }
     } catch (err) {
@@ -42,14 +52,13 @@ export function StaffDashboardPage() {
 
   async function saveBeds(e) {
     e.preventDefault();
-    const h = hospitals[0];
-    if (!h?._id) {
-      setBedMessage("No hospital assigned to this account.");
+    if (!capacity) {
+      setBedMessage("Capacity data unavailable.");
       return;
     }
     setBedMessage("");
     try {
-      await api(`/hospitals/${h._id}/beds`, {
+      await api("/capacity", {
         method: "PATCH",
         body: {
           icuTotal: Number(bedForm.icuTotal),
@@ -65,6 +74,41 @@ export function StaffDashboardPage() {
     }
   }
 
+  async function createStaffUser(e) {
+    e.preventDefault();
+    setStaffMessage("");
+    try {
+      await api("/staff/users", {
+        method: "POST",
+        body: {
+          fullName: staffForm.fullName,
+          email: staffForm.email,
+          password: staffForm.password,
+          role: "staff",
+        },
+      });
+      setStaffMessage("Staff account created.");
+      setStaffForm({ fullName: "", email: "", password: "" });
+      await load();
+    } catch (err) {
+      setStaffMessage(err.message || "Create staff failed");
+    }
+  }
+
+  const filteredPatients = useMemo(() => {
+    const search = queueSearch.trim().toLowerCase();
+    const minUrgency =
+      queueUrgencyMin === "" || Number.isNaN(Number(queueUrgencyMin)) ? null : Number(queueUrgencyMin);
+
+    return patients.filter((p) => {
+      if (queueBedType !== "all" && p.bedType !== queueBedType) return false;
+      if (minUrgency !== null && Number(p.urgencyScore || 0) < minUrgency) return false;
+      if (!search) return true;
+      const haystack = [p.fullName, p.email, p.tokenId].filter(Boolean).join(" ").toLowerCase();
+      return haystack.includes(search);
+    });
+  }, [patients, queueBedType, queueUrgencyMin, queueSearch]);
+
   if (loading) return <p className="text-slate-600">Loading…</p>;
 
   return (
@@ -75,35 +119,35 @@ export function StaffDashboardPage() {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold">Hospital load</h2>
-        {hospitals.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">
-            No hospitals (check staff <code>hospitalId</code> in the database).
-          </p>
-        ) : (
-          <div className="mt-4 space-y-3">
-            {hospitals.map((h) => (
-              <div key={h._id} className="rounded-lg border border-slate-200 p-4">
-                <strong className="block text-slate-900">{h.name}</strong>
-                <p className="mt-1 text-sm text-slate-600">
-                  ICU {h.icuOccupied}/{h.icuTotal} · General {h.generalOccupied}/{h.generalTotal}
-                </p>
-              </div>
-            ))}
+        <h2 className="text-xl font-semibold">System capacity load</h2>
+        {capacity ? (
+          <div className="mt-4 rounded-lg border border-slate-200 p-4">
+            <p className="text-sm text-slate-600">
+              ICU {capacity.icuOccupied}/{capacity.icuTotal} · General {capacity.generalOccupied}/
+              {capacity.generalTotal}
+            </p>
           </div>
+        ) : (
+          <p className="mt-3 text-sm text-slate-500">No capacity data found.</p>
         )}
       </div>
 
-      {hospitals[0] ? (
+      {capacity ? (
         <form
           onSubmit={saveBeds}
           className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
         >
           <h2 className="text-xl font-semibold">Update bed counts</h2>
+          <p className="mt-2 text-sm text-slate-500">
+            Validation is enforced and occupied counts auto-adjust if totals are reduced.
+          </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
               ICU total
               <input
+                type="number"
+                min="0"
+                step="1"
                 value={bedForm.icuTotal}
                 onChange={(e) => setBedForm((f) => ({ ...f, icuTotal: e.target.value }))}
                 className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
@@ -112,6 +156,9 @@ export function StaffDashboardPage() {
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
               ICU occupied
               <input
+                type="number"
+                min="0"
+                step="1"
                 value={bedForm.icuOccupied}
                 onChange={(e) => setBedForm((f) => ({ ...f, icuOccupied: e.target.value }))}
                 className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
@@ -120,6 +167,9 @@ export function StaffDashboardPage() {
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
               General total
               <input
+                type="number"
+                min="0"
+                step="1"
                 value={bedForm.generalTotal}
                 onChange={(e) => setBedForm((f) => ({ ...f, generalTotal: e.target.value }))}
                 className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
@@ -128,6 +178,9 @@ export function StaffDashboardPage() {
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
               General occupied
               <input
+                type="number"
+                min="0"
+                step="1"
                 value={bedForm.generalOccupied}
                 onChange={(e) => setBedForm((f) => ({ ...f, generalOccupied: e.target.value }))}
                 className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
@@ -147,8 +200,92 @@ export function StaffDashboardPage() {
       ) : null}
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-semibold">Staff user management</h2>
+        <form onSubmit={createStaffUser} className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <input
+            placeholder="Full name"
+            value={staffForm.fullName}
+            onChange={(e) => setStaffForm((f) => ({ ...f, fullName: e.target.value }))}
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={staffForm.email}
+            onChange={(e) => setStaffForm((f) => ({ ...f, email: e.target.value }))}
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={staffForm.password}
+            onChange={(e) => setStaffForm((f) => ({ ...f, password: e.target.value }))}
+            required
+            minLength={6}
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          />
+          <button
+            type="submit"
+            className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white transition hover:bg-teal-800 md:col-span-2 xl:col-span-3"
+          >
+            Create staff account
+          </button>
+        </form>
+        {staffMessage ? <p className="mt-3 text-sm text-slate-600">{staffMessage}</p> : null}
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 text-left text-slate-600">
+                <th className="px-3 py-2 font-semibold">Name</th>
+                <th className="px-3 py-2 font-semibold">Email</th>
+                <th className="px-3 py-2 font-semibold">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staffUsers.map((u) => (
+                <tr key={u.id} className="border-b border-slate-100">
+                  <td className="px-3 py-2">{u.fullName}</td>
+                  <td className="px-3 py-2">{u.email}</td>
+                  <td className="px-3 py-2 capitalize">{u.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold">Patients by priority</h2>
-        {patients.length === 0 ? (
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <input
+            placeholder="Search name/email/token"
+            value={queueSearch}
+            onChange={(e) => setQueueSearch(e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          />
+          <select
+            value={queueBedType}
+            onChange={(e) => setQueueBedType(e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          >
+            <option value="all">All beds</option>
+            <option value="icu">ICU</option>
+            <option value="general">General</option>
+            <option value="none">Unassigned</option>
+          </select>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            placeholder="Min urgency"
+            value={queueUrgencyMin}
+            onChange={(e) => setQueueUrgencyMin(e.target.value)}
+            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
+          />
+        </div>
+        {filteredPatients.length === 0 ? (
           <p className="mt-3 text-sm text-slate-500">No patients in queue.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
@@ -160,18 +297,16 @@ export function StaffDashboardPage() {
                   <th className="px-3 py-2 font-semibold">Name</th>
                   <th className="px-3 py-2 font-semibold">Email</th>
                   <th className="px-3 py-2 font-semibold">Bed</th>
-                  <th className="px-3 py-2 font-semibold">Hospital</th>
                 </tr>
               </thead>
               <tbody>
-                {patients.map((p) => (
+                {filteredPatients.map((p) => (
                   <tr key={p.id} className="border-b border-slate-100">
                     <td className="px-3 py-2">{p.urgencyScore}</td>
                     <td className="px-3 py-2">{p.severity}</td>
                     <td className="px-3 py-2">{p.fullName ?? "—"}</td>
                     <td className="px-3 py-2">{p.email ?? "—"}</td>
                     <td className="px-3 py-2 capitalize">{p.bedType}</td>
-                    <td className="px-3 py-2">{p.hospital?.name ?? "—"}</td>
                   </tr>
                 ))}
               </tbody>

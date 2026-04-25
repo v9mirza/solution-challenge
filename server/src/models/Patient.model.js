@@ -17,7 +17,6 @@ const patientSchema = new mongoose.Schema(
     existingConditions: { type: String, default: "" },
     allergies: { type: String, default: "" },
     urgencyScore: { type: Number, default: 0 },
-    assignedHospitalId: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital", default: null },
     bedType: {
       type: String,
       enum: ["icu", "general", "none"],

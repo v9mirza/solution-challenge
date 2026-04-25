@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { computePriorityScore, suggestBedType } from "../engine/scoring.js";
-import { Hospital, Patient } from "../models/index.js";
+import { Patient, SystemState } from "../models/index.js";
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
@@ -38,42 +38,15 @@ function vitalSeverityBoost(patient) {
   return boost;
 }
 
-function getResourcePressure(hospitals) {
-  if (!hospitals.length) return { icuPressure: 0, generalPressure: 0 };
-
-  let icuTotal = 0;
-  let icuOccupied = 0;
-  let generalTotal = 0;
-  let generalOccupied = 0;
-
-  for (const h of hospitals) {
-    icuTotal += toNumber(h.icuTotal);
-    icuOccupied += toNumber(h.icuOccupied);
-    generalTotal += toNumber(h.generalTotal);
-    generalOccupied += toNumber(h.generalOccupied);
-  }
-
+function getResourcePressure(capacity) {
+  const icuTotal = toNumber(capacity?.icuTotal);
+  const icuOccupied = toNumber(capacity?.icuOccupied);
+  const generalTotal = toNumber(capacity?.generalTotal);
+  const generalOccupied = toNumber(capacity?.generalOccupied);
   return {
     icuPressure: icuTotal > 0 ? icuOccupied / icuTotal : 0,
     generalPressure: generalTotal > 0 ? generalOccupied / generalTotal : 0,
   };
-}
-
-function canAllocateBed(hospital, bedType) {
-  if (bedType === "icu") {
-    return toNumber(hospital.icuTotal) - toNumber(hospital.icuOccupied) > 0;
-  }
-  if (bedType === "general") {
-    return toNumber(hospital.generalTotal) - toNumber(hospital.generalOccupied) > 0;
-  }
-  return false;
-}
-
-async function assignHospitalForBedType(bedType) {
-  if (bedType === "none") return null;
-  const hospitals = await Hospital.find().sort({ createdAt: 1 }).exec();
-  const match = hospitals.find((h) => canAllocateBed(h, bedType));
-  return match ? match._id : null;
 }
 
 function formatPatientListItem(p) {
@@ -95,7 +68,6 @@ function formatPatientListItem(p) {
     urgencyScore: p.urgencyScore,
     bedType: p.bedType,
     queuedAt: p.queuedAt,
-    hospital: p.assignedHospitalId,
   };
 }
 
@@ -104,7 +76,6 @@ export const patientService = {
     if (user.role === "staff") {
       const patients = await Patient.find()
         .populate("userId", "fullName email")
-        .populate("assignedHospitalId", "name")
         .sort({ urgencyScore: -1, queuedAt: 1 })
         .exec();
       return { patients: patients.map(formatPatientListItem) };
@@ -115,7 +86,7 @@ export const patientService = {
   },
 
   async getStatusForUser(userId) {
-    const patient = await Patient.findOne({ userId }).populate("assignedHospitalId", "name");
+    const patient = await Patient.findOne({ userId });
     if (!patient) return { patient: null };
     return {
       patient: {
@@ -135,7 +106,6 @@ export const patientService = {
         urgencyScore: patient.urgencyScore,
         bedType: patient.bedType,
         queuedAt: patient.queuedAt,
-        hospital: patient.assignedHospitalId,
       },
     };
   },
@@ -221,8 +191,8 @@ export const patientService = {
     const waitMinutes = patient.queuedAt
       ? Math.max(0, Math.floor((Date.now() - patient.queuedAt.getTime()) / 60000))
       : 0;
-    const hospitals = await Hospital.find().exec();
-    const { icuPressure, generalPressure } = getResourcePressure(hospitals);
+    const capacity = await SystemState.findOne({ key: "default" });
+    const { icuPressure, generalPressure } = getResourcePressure(capacity);
 
     const vitalsBoost = vitalSeverityBoost(patient);
     const derivedSeverity = Math.min(100, Number(patient.severity || 0) + vitalsBoost);
@@ -235,11 +205,9 @@ export const patientService = {
       generalPressure,
     });
     const bedType = suggestBedType({ severity: effectiveSeverity });
-    const assignedHospitalId = await assignHospitalForBedType(bedType);
 
     patient.urgencyScore = score;
     patient.bedType = bedType;
-    patient.assignedHospitalId = assignedHospitalId;
     await patient.save();
 
     return {
@@ -249,7 +217,6 @@ export const patientService = {
       vitalsBoost,
       urgencyScore: patient.urgencyScore,
       bedType: patient.bedType,
-      assignedHospitalId: patient.assignedHospitalId,
       explanation,
     };
   },

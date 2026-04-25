@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "seed:hospital": "node src/scripts/seedHospital.js",
     "migrate:roles": "node src/scripts/migrateRolesToTwoRole.js"
   },
   "dependencies": {

@@ -71,8 +71,6 @@ export function ProfilePage() {
         <dd>{user.email}</dd>
         <dt className="font-semibold text-slate-700">Role</dt>
         <dd className="capitalize">{user.role}</dd>
-        <dt className="font-semibold text-slate-700">Hospital ID</dt>
-        <dd>{user.hospitalId || "—"}</dd>
         <dt className="font-semibold text-slate-700">Joined</dt>
         <dd>{joined}</dd>
         <dt className="font-semibold text-slate-700">Last updated</dt>
@@ -90,8 +88,6 @@ export function ProfilePage() {
               <dd className="text-sm">{patientData.urgencyScore}</dd>
               <dt className="text-sm font-semibold text-slate-700">Bed type</dt>
               <dd className="text-sm capitalize">{patientData.bedType}</dd>
-              <dt className="text-sm font-semibold text-slate-700">Hospital</dt>
-              <dd className="text-sm">{patientData.hospital?.name || "Waiting for assignment"}</dd>
             </dl>
           ) : (
             <p className="mt-2 text-sm text-slate-600">No intake data yet.</p>

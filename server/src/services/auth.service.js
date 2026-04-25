@@ -16,7 +16,6 @@ function signToken(user) {
     {
       sub: user._id.toString(),
       role: normalizeRole(user.role),
-      hospitalId: user.hospitalId ? user.hospitalId.toString() : null,
     },
     secret,
     { expiresIn: "7d" }
@@ -70,15 +69,12 @@ export const authService = {
         fullName: user.fullName,
         email: user.email,
         role: normalizeRole(user.role),
-        hospitalId: user.hospitalId,
       },
     };
   },
 
   async getMe(userId) {
-    const user = await User.findById(userId).select(
-      "_id fullName email role hospitalId createdAt updatedAt"
-    );
+    const user = await User.findById(userId).select("_id fullName email role createdAt updatedAt");
     if (!user) {
       const err = new Error("User not found");
       err.status = 404;
@@ -90,7 +86,6 @@ export const authService = {
         fullName: user.fullName,
         email: user.email,
         role: normalizeRole(user.role),
-        hospitalId: user.hospitalId,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

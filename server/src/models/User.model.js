@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "staff"],
       default: "user",
     },
-    hospitalId: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital", default: null },
   },
   { timestamps: true }
 );

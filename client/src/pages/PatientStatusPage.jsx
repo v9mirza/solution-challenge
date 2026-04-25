@@ -72,8 +72,6 @@ export function PatientStatusPage() {
         <dd>{p.severity}</dd>
         <dt className="font-semibold text-slate-700">Bed</dt>
         <dd className="capitalize">{p.bedType}</dd>
-        <dt className="font-semibold text-slate-700">Hospital</dt>
-        <dd>{p.hospital?.name ?? "Waiting for assignment"}</dd>
         <dt className="font-semibold text-slate-700">Queued</dt>
         <dd>{p.queuedAt ? new Date(p.queuedAt).toLocaleString() : "—"}</dd>
         <dt className="font-semibold text-slate-700">Symptoms</dt>

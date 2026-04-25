@@ -43,24 +43,17 @@ export function HomePage() {
       }
 
       try {
-        const [patientsRes, hospitalsRes] = await Promise.all([api("/patients"), api("/hospitals")]);
+        const [patientsRes, capacityRes] = await Promise.all([api("/patients"), api("/capacity")]);
         if (cancelled) return;
 
         const patients = patientsRes?.patients ?? [];
-        const hospitals = hospitalsRes?.hospitals ?? [];
-
         const criticalInQueue = patients.filter((p) => Number(p.urgencyScore) >= 70).length;
-
-        const totals = hospitals.reduce(
-          (acc, h) => {
-            acc.icuTotal += Number(h.icuTotal || 0);
-            acc.icuOccupied += Number(h.icuOccupied || 0);
-            acc.generalTotal += Number(h.generalTotal || 0);
-            acc.generalOccupied += Number(h.generalOccupied || 0);
-            return acc;
-          },
-          { icuTotal: 0, icuOccupied: 0, generalTotal: 0, generalOccupied: 0 }
-        );
+        const totals = {
+          icuTotal: Number(capacityRes?.capacity?.icuTotal || 0),
+          icuOccupied: Number(capacityRes?.capacity?.icuOccupied || 0),
+          generalTotal: Number(capacityRes?.capacity?.generalTotal || 0),
+          generalOccupied: Number(capacityRes?.capacity?.generalOccupied || 0),
+        };
 
         const icuLoad =
           totals.icuTotal > 0 ? `${Math.round((totals.icuOccupied / totals.icuTotal) * 100)}%` : "—";
