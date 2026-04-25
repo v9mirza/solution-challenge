@@ -67,18 +67,48 @@ function formatPatientListItem(p) {
     painLevel: p.painLevel,
     urgencyScore: p.urgencyScore,
     bedType: p.bedType,
+    lifecycleStatus: p.lifecycleStatus,
+    staffNote: p.staffNote || "",
+    manualPriorityOverride: p.manualPriorityOverride?.score ?? null,
+    manualPriorityReason: p.manualPriorityOverride?.reason || "",
     queuedAt: p.queuedAt,
   };
 }
 
 export const patientService = {
-  async listForStaff(user) {
+  async listForStaff(user, query = {}) {
     if (user.role === "staff") {
-      const patients = await Patient.find()
+      const q = {};
+      if (query.bedType && ["icu", "general", "none"].includes(query.bedType)) {
+        q.bedType = query.bedType;
+      }
+      if (
+        query.lifecycleStatus &&
+        ["waiting", "in_progress", "admitted", "discharged", "cancelled"].includes(query.lifecycleStatus)
+      ) {
+        q.lifecycleStatus = query.lifecycleStatus;
+      }
+      if (query.minUrgency !== undefined && query.minUrgency !== "") {
+        const minUrgency = Number(query.minUrgency);
+        if (Number.isFinite(minUrgency)) q.urgencyScore = { $gte: minUrgency };
+      }
+      if (query.search) {
+        const pattern = String(query.search).trim();
+        if (pattern) q.$or = [{ tokenId: { $regex: pattern, $options: "i" } }];
+      }
+
+      const patients = await Patient.find(q)
         .populate("userId", "fullName email")
         .sort({ urgencyScore: -1, queuedAt: 1 })
         .exec();
-      return { patients: patients.map(formatPatientListItem) };
+      let rows = patients.map(formatPatientListItem);
+      if (query.search) {
+        const s = String(query.search).toLowerCase();
+        rows = rows.filter((p) =>
+          [p.fullName, p.email, p.tokenId, p.symptoms, p.staffNote].filter(Boolean).join(" ").toLowerCase().includes(s)
+        );
+      }
+      return { patients: rows };
     }
     const err = new Error("Forbidden");
     err.status = 403;
@@ -105,9 +135,118 @@ export const patientService = {
         allergies: patient.allergies,
         urgencyScore: patient.urgencyScore,
         bedType: patient.bedType,
+        lifecycleStatus: patient.lifecycleStatus,
+        staffNote: patient.staffNote || "",
         queuedAt: patient.queuedAt,
       },
     };
+  },
+
+  async setLifecycle(user, patientId, { lifecycleStatus, staffNote }) {
+    if (user.role !== "staff") {
+      const err = new Error("Forbidden");
+      err.status = 403;
+      throw err;
+    }
+    const allowed = ["waiting", "in_progress", "admitted", "discharged", "cancelled"];
+    if (!lifecycleStatus || !allowed.includes(lifecycleStatus)) {
+      const err = new Error("Valid lifecycleStatus required");
+      err.status = 400;
+      throw err;
+    }
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      const err = new Error("Patient not found");
+      err.status = 404;
+      throw err;
+    }
+    patient.lifecycleStatus = lifecycleStatus;
+    if (staffNote !== undefined) patient.staffNote = String(staffNote || "").trim();
+    await patient.save();
+    const populated = await Patient.findById(patientId).populate("userId", "fullName email");
+    return { patient: formatPatientListItem(populated) };
+  },
+
+  async setPriorityOverride(user, patientId, { score, reason }) {
+    if (user.role !== "staff") {
+      const err = new Error("Forbidden");
+      err.status = 403;
+      throw err;
+    }
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      const err = new Error("Patient not found");
+      err.status = 404;
+      throw err;
+    }
+    if (score === null) {
+      patient.manualPriorityOverride = {
+        score: null,
+        reason: "",
+        updatedBy: null,
+        updatedAt: null,
+      };
+      await patient.save();
+    } else {
+      const numeric = Number(score);
+      if (!Number.isFinite(numeric) || numeric < 0 || numeric > 100) {
+        const err = new Error("score must be between 0 and 100");
+        err.status = 400;
+        throw err;
+      }
+      if (!reason || String(reason).trim().length < 3) {
+        const err = new Error("reason required for override");
+        err.status = 400;
+        throw err;
+      }
+      patient.urgencyScore = numeric;
+      patient.manualPriorityOverride = {
+        score: numeric,
+        reason: String(reason).trim(),
+        updatedBy: user.id,
+        updatedAt: new Date(),
+      };
+      await patient.save();
+    }
+    const populated = await Patient.findById(patientId).populate("userId", "fullName email");
+    return { patient: formatPatientListItem(populated) };
+  },
+
+  async exportCsv(user, query = {}) {
+    const data = await this.listForStaff(user, query);
+    const header = [
+      "tokenId",
+      "fullName",
+      "email",
+      "urgencyScore",
+      "severity",
+      "bedType",
+      "lifecycleStatus",
+      "queuedAt",
+      "manualPriorityOverride",
+      "manualPriorityReason",
+    ];
+    const escape = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+    const lines = [header.join(",")];
+    for (const p of data.patients) {
+      lines.push(
+        [
+          p.tokenId,
+          p.fullName,
+          p.email,
+          p.urgencyScore,
+          p.severity,
+          p.bedType,
+          p.lifecycleStatus,
+          p.queuedAt ? new Date(p.queuedAt).toISOString() : "",
+          p.manualPriorityOverride ?? "",
+          p.manualPriorityReason ?? "",
+        ]
+          .map(escape)
+          .join(",")
+      );
+    }
+    return lines.join("\n");
   },
 
   async submitIntake(userId, body) {
@@ -170,6 +309,8 @@ export const patientService = {
         painLevel: parsedPainLevel,
         existingConditions: existingConditions ?? "",
         allergies: allergies ?? "",
+        lifecycleStatus: "waiting",
+        staffNote: "",
         queuedAt: new Date(),
       });
     } else {
@@ -206,7 +347,9 @@ export const patientService = {
     });
     const bedType = suggestBedType({ severity: effectiveSeverity });
 
-    patient.urgencyScore = score;
+    const overrideScore = Number(patient.manualPriorityOverride?.score);
+    const hasManualOverride = Number.isFinite(overrideScore);
+    patient.urgencyScore = hasManualOverride ? overrideScore : score;
     patient.bedType = bedType;
     await patient.save();
 
@@ -217,7 +360,9 @@ export const patientService = {
       vitalsBoost,
       urgencyScore: patient.urgencyScore,
       bedType: patient.bedType,
-      explanation,
+      explanation: hasManualOverride
+        ? `${explanation} Manual priority override applied by staff.`
+        : explanation,
     };
   },
 };

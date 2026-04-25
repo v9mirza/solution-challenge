@@ -55,12 +55,19 @@ export const authService = {
       err.status = 401;
       throw err;
     }
+    if (!user.isActive) {
+      const err = new Error("Account disabled");
+      err.status = 403;
+      throw err;
+    }
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) {
       const err = new Error("Invalid credentials");
       err.status = 401;
       throw err;
     }
+    user.lastLoginAt = new Date();
+    await user.save();
     const token = signToken(user);
     return {
       token,
@@ -69,12 +76,15 @@ export const authService = {
         fullName: user.fullName,
         email: user.email,
         role: normalizeRole(user.role),
+        mustResetPassword: Boolean(user.mustResetPassword),
       },
     };
   },
 
   async getMe(userId) {
-    const user = await User.findById(userId).select("_id fullName email role createdAt updatedAt");
+    const user = await User.findById(userId).select(
+      "_id fullName email role isActive mustResetPassword lastLoginAt createdAt updatedAt"
+    );
     if (!user) {
       const err = new Error("User not found");
       err.status = 404;
@@ -86,6 +96,9 @@ export const authService = {
         fullName: user.fullName,
         email: user.email,
         role: normalizeRole(user.role),
+        isActive: user.isActive,
+        mustResetPassword: Boolean(user.mustResetPassword),
+        lastLoginAt: user.lastLoginAt,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "staff"],
       default: "user",
     },
+    isActive: { type: Boolean, default: true },
+    mustResetPassword: { type: Boolean, default: false },
+    lastLoginAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

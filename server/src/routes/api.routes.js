@@ -17,6 +17,9 @@ apiRouter.post("/auth/login", auth.login);
 apiRouter.get("/auth/me", requireAuth, auth.me);
 
 apiRouter.get("/patients", requireAuth, requireRoles("staff"), patient.list);
+apiRouter.get("/patients/export.csv", requireAuth, requireRoles("staff"), patient.exportCsv);
+apiRouter.patch("/patients/:id/lifecycle", requireAuth, requireRoles("staff"), patient.setLifecycle);
+apiRouter.patch("/patients/:id/override", requireAuth, requireRoles("staff"), patient.setPriorityOverride);
 apiRouter.get("/patients/me", requireAuth, requireRoles("user"), patient.getMe);
 apiRouter.post("/patients/me/intake", requireAuth, requireRoles("user"), patient.intake);
 
@@ -25,5 +28,9 @@ apiRouter.patch("/capacity", requireAuth, requireRoles("staff"), capacity.update
 
 apiRouter.get("/admin/users", requireAuth, requireRoles("staff"), admin.listUsers);
 apiRouter.post("/admin/users", requireAuth, requireRoles("staff"), admin.createUser);
+apiRouter.patch("/admin/users/:id/active", requireAuth, requireRoles("staff"), admin.setUserActive);
+apiRouter.post("/admin/users/:id/reset-password", requireAuth, requireRoles("staff"), admin.resetUserPassword);
 apiRouter.get("/staff/users", requireAuth, requireRoles("staff"), admin.listUsers);
 apiRouter.post("/staff/users", requireAuth, requireRoles("staff"), admin.createUser);
+apiRouter.patch("/staff/users/:id/active", requireAuth, requireRoles("staff"), admin.setUserActive);
+apiRouter.post("/staff/users/:id/reset-password", requireAuth, requireRoles("staff"), admin.resetUserPassword);

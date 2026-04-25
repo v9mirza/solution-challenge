@@ -10,6 +10,9 @@ function sanitizeUser(user) {
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    isActive: user.isActive,
+    mustResetPassword: Boolean(user.mustResetPassword),
+    lastLoginAt: user.lastLoginAt,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -19,7 +22,7 @@ export const adminService = {
   async listPrivilegedUsers() {
     const users = await User.find({ role: { $in: ["staff", "admin"] } })
       .sort({ role: 1, fullName: 1 })
-      .select("_id fullName email role createdAt updatedAt");
+      .select("_id fullName email role isActive mustResetPassword lastLoginAt createdAt updatedAt");
     return {
       users: users.map((u) => ({ ...sanitizeUser(u), role: normalizeRole(u.role) })),
     };
@@ -52,8 +55,45 @@ export const adminService = {
       email: normalizedEmail,
       passwordHash,
       role,
+      isActive: true,
+      mustResetPassword: false,
     });
 
+    return { user: sanitizeUser(user) };
+  },
+
+  async setStaffActiveStatus(userId, { isActive }) {
+    if (typeof isActive !== "boolean") {
+      const err = new Error("isActive boolean required");
+      err.status = 400;
+      throw err;
+    }
+    const user = await User.findById(userId);
+    if (!user || normalizeRole(user.role) !== "staff") {
+      const err = new Error("Staff user not found");
+      err.status = 404;
+      throw err;
+    }
+    user.isActive = isActive;
+    await user.save();
+    return { user: sanitizeUser(user) };
+  },
+
+  async resetStaffPassword(userId, { newPassword }) {
+    if (!newPassword || String(newPassword).length < 6) {
+      const err = new Error("newPassword with min length 6 required");
+      err.status = 400;
+      throw err;
+    }
+    const user = await User.findById(userId);
+    if (!user || normalizeRole(user.role) !== "staff") {
+      const err = new Error("Staff user not found");
+      err.status = 404;
+      throw err;
+    }
+    user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    user.mustResetPassword = true;
+    await user.save();
     return { user: sanitizeUser(user) };
   },
 };

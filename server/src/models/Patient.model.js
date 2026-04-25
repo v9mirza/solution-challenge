@@ -17,6 +17,18 @@ const patientSchema = new mongoose.Schema(
     existingConditions: { type: String, default: "" },
     allergies: { type: String, default: "" },
     urgencyScore: { type: Number, default: 0 },
+    lifecycleStatus: {
+      type: String,
+      enum: ["waiting", "in_progress", "admitted", "discharged", "cancelled"],
+      default: "waiting",
+    },
+    staffNote: { type: String, default: "" },
+    manualPriorityOverride: {
+      score: { type: Number, default: null },
+      reason: { type: String, default: "" },
+      updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      updatedAt: { type: Date, default: null },
+    },
     bedType: {
       type: String,
       enum: ["icu", "general", "none"],
