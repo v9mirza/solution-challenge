@@ -2,11 +2,7 @@ import { Hospital } from "../models/index.js";
 
 export const hospitalService = {
   async listForStaff(user) {
-    if (user.role === "staff" && user.hospitalId) {
-      const h = await Hospital.findById(user.hospitalId);
-      return { hospitals: h ? [h] : [] };
-    }
-    if (user.role === "admin") {
+    if (user.role === "staff") {
       const hospitals = await Hospital.find().sort({ name: 1 });
       return { hospitals };
     }
@@ -16,12 +12,7 @@ export const hospitalService = {
   },
 
   async updateBeds(user, hospitalId, body) {
-    if (user.role !== "staff" && user.role !== "admin") {
-      const err = new Error("Forbidden");
-      err.status = 403;
-      throw err;
-    }
-    if (user.role === "staff" && String(user.hospitalId) !== String(hospitalId)) {
+    if (user.role !== "staff") {
       const err = new Error("Forbidden");
       err.status = 403;
       throw err;

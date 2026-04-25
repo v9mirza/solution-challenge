@@ -7,19 +7,19 @@ export function HomePage() {
   const token = getAuthToken();
   const role = token ? parseJwtPayload(token)?.role : null;
   const isAuthed = Boolean(token);
-  const primaryCtaHref = !isAuthed ? "/signup" : role === "patient" ? "/patient" : "/staff";
+  const primaryCtaHref = !isAuthed ? "/signup" : role === "user" ? "/patient" : "/staff";
   const primaryCtaLabel = !isAuthed
     ? "Start as patient"
-    : role === "patient"
+    : role === "user"
       ? "Go to patient portal"
       : "Go to staff dashboard";
-  const secondaryCtaHref = !isAuthed ? "/login" : role === "patient" ? "/patient/status" : "/staff";
+  const secondaryCtaHref = !isAuthed ? "/login" : role === "user" ? "/patient/status" : "/staff";
   const secondaryCtaLabel = !isAuthed
     ? "I already have an account"
-    : role === "patient"
+    : role === "user"
       ? "View live status"
       : "Open live queue";
-  const canViewOpsSnapshot = role === "staff" || role === "admin";
+  const canViewOpsSnapshot = role === "staff";
 
   const [snapshot, setSnapshot] = useState({
     criticalInQueue: "—",
@@ -100,8 +100,8 @@ export function HomePage() {
 
   const snapshotLabel = useMemo(() => {
     if (canViewOpsSnapshot) return "Live triage snapshot";
-    if (role === "patient") return "Ops snapshot (staff/admin only)";
-    return "Ops snapshot (login as staff/admin)";
+    if (role === "user") return "Ops snapshot (staff only)";
+    return "Ops snapshot (login as staff)";
   }, [canViewOpsSnapshot, role]);
 
   return (
@@ -175,7 +175,7 @@ export function HomePage() {
           </div>
           <div className="rounded-xl border border-white/20 bg-white/10 p-3">
             <p className="text-2xl font-bold">Role-based</p>
-            <p className="text-sm text-cyan-50">Patient, staff, and admin-specific workflows</p>
+            <p className="text-sm text-cyan-50">User and staff-specific workflows</p>
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@ export function HomePage() {
         </article>
         <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
           <h2 className="text-lg font-semibold text-slate-900">Role-based operations</h2>
-          <p className="mt-2 text-sm text-slate-600">Patients, staff, and admins each get relevant actions.</p>
+          <p className="mt-2 text-sm text-slate-600">Users and staff each get relevant actions.</p>
         </article>
       </div>
 
@@ -234,16 +234,12 @@ export function HomePage() {
           <h3 className="text-xl font-semibold text-slate-900">Role access</h3>
           <div className="mt-4 space-y-3 text-sm">
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p className="font-semibold text-slate-900">Patient</p>
+              <p className="font-semibold text-slate-900">User</p>
               <p className="text-slate-600">Submit intake, view token, urgency score, and assignment status.</p>
             </div>
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <p className="font-semibold text-slate-900">Staff</p>
               <p className="text-slate-600">View ranked queue and update hospital bed occupancy in real time.</p>
-            </div>
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p className="font-semibold text-slate-900">Admin</p>
-              <p className="text-slate-600">Oversee broader operations and cross-hospital views.</p>
             </div>
           </div>
         </article>

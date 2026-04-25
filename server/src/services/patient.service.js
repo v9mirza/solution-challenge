@@ -101,19 +101,8 @@ function formatPatientListItem(p) {
 
 export const patientService = {
   async listForStaff(user) {
-    const q = Patient.find()
-      .populate("userId", "fullName email")
-      .populate("assignedHospitalId", "name")
-      .sort({ urgencyScore: -1, queuedAt: 1 });
-
-    if (user.role === "admin") {
-      const patients = await q.exec();
-      return { patients: patients.map(formatPatientListItem) };
-    }
-    if (user.role === "staff" && user.hospitalId) {
-      const patients = await Patient.find({
-        $or: [{ assignedHospitalId: user.hospitalId }, { assignedHospitalId: null }],
-      })
+    if (user.role === "staff") {
+      const patients = await Patient.find()
         .populate("userId", "fullName email")
         .populate("assignedHospitalId", "name")
         .sort({ urgencyScore: -1, queuedAt: 1 })

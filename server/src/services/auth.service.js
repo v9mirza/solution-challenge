@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/index.js";
+import { normalizeRole } from "../utils/roles.js";
 
 const SALT_ROUNDS = 10;
 
@@ -14,7 +15,7 @@ function signToken(user) {
   return jwt.sign(
     {
       sub: user._id.toString(),
-      role: user.role,
+      role: normalizeRole(user.role),
       hospitalId: user.hospitalId ? user.hospitalId.toString() : null,
     },
     secret,
@@ -34,12 +35,12 @@ export const authService = {
       fullName,
       email,
       passwordHash,
-      role: "patient",
+      role: "user",
     });
     const token = signToken(user);
     return {
       token,
-      user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role },
+      user: { id: user._id, fullName: user.fullName, email: user.email, role: normalizeRole(user.role) },
     };
   },
 
@@ -68,7 +69,7 @@ export const authService = {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: normalizeRole(user.role),
         hospitalId: user.hospitalId,
       },
     };
@@ -88,7 +89,7 @@ export const authService = {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role,
+        role: normalizeRole(user.role),
         hospitalId: user.hospitalId,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

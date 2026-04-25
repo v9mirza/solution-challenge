@@ -23,17 +23,17 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute roles={["patient"]} />}>
+        <Route element={<ProtectedRoute roles={["user"]} />}>
           <Route path="/patient" element={<PatientPortalPage />} />
           <Route path="/patient/intake" element={<PatientIntakePage />} />
           <Route path="/patient/status" element={<PatientStatusPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute roles={["staff", "admin"]} />}>
+        <Route element={<ProtectedRoute roles={["staff"]} />}>
           <Route path="/staff" element={<StaffDashboardPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute roles={["patient", "staff", "admin"]} />}>
+        <Route element={<ProtectedRoute roles={["user", "staff"]} />}>
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 

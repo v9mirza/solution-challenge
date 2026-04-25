@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { normalizeRole } from "../utils/roles.js";
 
 const bearer = /^Bearer\s+(.+)$/i;
 
@@ -18,7 +19,7 @@ export function requireAuth(req, res, next) {
     const payload = jwt.verify(match[1], secret);
     req.user = {
       id: payload.sub,
-      role: payload.role,
+      role: normalizeRole(payload.role),
       hospitalId: payload.hospitalId ?? null,
     };
     return next();

@@ -20,9 +20,9 @@ export function LoginPage() {
       const data = await api("/auth/login", { method: "POST", body: { email, password } });
       setAuthToken(data.token);
       const role = parseJwtPayload(data.token)?.role;
-      if (from && role === "patient" && from.startsWith("/patient")) {
+      if (from && role === "user" && from.startsWith("/patient")) {
         navigate(from, { replace: true });
-      } else if (role === "patient") {
+      } else if (role === "user") {
         navigate("/patient/status", { replace: true });
       } else {
         navigate("/staff", { replace: true });

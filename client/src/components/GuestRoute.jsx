@@ -6,7 +6,7 @@ export function GuestRoute() {
   const token = getAuthToken();
   if (token) {
     const p = parseJwtPayload(token);
-    const to = p?.role === "patient" ? "/patient/status" : "/staff";
+    const to = p?.role === "user" ? "/patient/status" : "/staff";
     return <Navigate to={to} replace />;
   }
   return <Outlet />;

@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     role: {
       type: String,
-      enum: ["patient", "staff", "admin"],
-      default: "patient",
+      enum: ["user", "staff"],
+      default: "user",
     },
     hospitalId: { type: mongoose.Schema.Types.ObjectId, ref: "Hospital", default: null },
   },

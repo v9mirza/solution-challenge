@@ -39,7 +39,7 @@ export function Layout() {
               </NavLink>
             </>
           )}
-          {role === "patient" && (
+          {role === "user" && (
             <>
                 <NavLink to="/patient" className={({ isActive }) => navClass(isActive)}>
                 Patient
@@ -52,7 +52,7 @@ export function Layout() {
               </NavLink>
             </>
           )}
-          {(role === "staff" || role === "admin") && (
+          {role === "staff" && (
               <NavLink to="/staff" className={({ isActive }) => navClass(isActive)}>
               Staff
             </NavLink>

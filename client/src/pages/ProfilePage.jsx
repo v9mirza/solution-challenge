@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../lib/api.js";
+import { normalizeRole } from "../lib/roles.js";
 
 export function ProfilePage() {
   const [data, setData] = useState(null);
@@ -15,8 +16,9 @@ export function ProfilePage() {
       try {
         const res = await api("/auth/me");
         if (!cancelled) {
-          setData(res);
-          if (res?.user?.role === "patient") {
+          const normalizedRole = normalizeRole(res?.user?.role);
+          setData({ ...res, user: { ...res?.user, role: normalizedRole } });
+          if (normalizedRole === "user") {
             try {
               const patientRes = await api("/patients/me");
               if (!cancelled) setPatientData(patientRes?.patient ?? null);
@@ -38,7 +40,7 @@ export function ProfilePage() {
 
   const user = data?.user;
   const quickLinks = useMemo(() => {
-    if (user?.role === "patient") {
+    if (user?.role === "user") {
       return [
         { to: "/patient/intake", label: "Update intake" },
         { to: "/patient/status", label: "View status" },
@@ -77,7 +79,7 @@ export function ProfilePage() {
         <dd>{updated}</dd>
       </dl>
 
-      {user.role === "patient" ? (
+      {user.role === "user" ? (
         <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
           <h2 className="text-lg font-semibold text-slate-900">Latest triage snapshot</h2>
           {patientData ? (
