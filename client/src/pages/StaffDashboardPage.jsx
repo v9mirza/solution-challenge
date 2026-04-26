@@ -28,6 +28,7 @@ export function StaffDashboardPage() {
   const [lifecycleDraft, setLifecycleDraft] = useState({});
   const [overrideDraft, setOverrideDraft] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedPatientForSymptoms, setSelectedPatientForSymptoms] = useState(null);
 
   async function load() {
     setError("");
@@ -196,6 +197,10 @@ export function StaffDashboardPage() {
       if (!search) return true;
       const haystack = [p.fullName, p.email, p.tokenId].filter(Boolean).join(" ").toLowerCase();
       return haystack.includes(search);
+    }).sort((a, b) => {
+      const severityA = Number(a.severity || 0);
+      const severityB = Number(b.severity || 0);
+      return severityB - severityA;
     });
   }, [patients, queueBedType, queueStatus, queueUrgencyMin, queueSearch]);
 
@@ -449,11 +454,39 @@ export function StaffDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPatients.map((p) => (
-                  <tr key={p.id} className="border-b border-slate-100">
-                    <td className="px-3 py-2">{p.urgencyScore}</td>
-                    <td className="px-3 py-2">{p.severity}</td>
-                    <td className="px-3 py-2">{p.fullName ?? "—"}</td>
+                {filteredPatients.map((p) => {
+                  const rowBg =
+                    p.severityColor === "red"
+                      ? "bg-red-50 border-red-200"
+                      : p.severityColor === "yellow"
+                      ? "bg-yellow-50 border-yellow-200"
+                      : "bg-emerald-50 border-emerald-200";
+                  return (
+                    <tr key={p.id} className={`border-b ${rowBg}`}>
+                      <td className="px-3 py-2">{p.urgencyScore}</td>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium capitalize ${
+                        p.severityColor === "red" ? "bg-red-100 text-red-800" :
+                        p.severityColor === "yellow" ? "bg-yellow-100 text-yellow-800" :
+                        "bg-green-100 text-green-800"
+                      }`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${
+                          p.severityColor === "red" ? "bg-red-600" :
+                          p.severityColor === "yellow" ? "bg-yellow-600" :
+                          "bg-green-600"
+                        }`} />
+                        {p.severity}%
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPatientForSymptoms(p)}
+                        className="text-left font-medium text-teal-600 hover:underline"
+                      >
+                        {p.fullName ?? "—"}
+                      </button>
+                    </td>
                     <td className="px-3 py-2">{p.email ?? "—"}</td>
                     <td className="px-3 py-2 capitalize">{p.bedType}</td>
                     <td className="px-3 py-2">
@@ -535,12 +568,35 @@ export function StaffDashboardPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
+      {selectedPatientForSymptoms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
+              Symptoms for {selectedPatientForSymptoms.fullName || "Patient"}
+            </h3>
+            <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-md bg-slate-50 p-4 text-sm text-slate-700">
+              {selectedPatientForSymptoms.symptoms || "No symptoms recorded."}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedPatientForSymptoms(null)}
+                className="rounded-md bg-slate-200 px-4 py-2 text-sm font-medium text-slate-800 transition hover:bg-slate-300"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

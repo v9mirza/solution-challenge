@@ -6,6 +6,7 @@ const patientSchema = new mongoose.Schema(
     tokenId: { type: String, unique: true, sparse: true },
     symptoms: { type: String, default: "" },
     severity: { type: Number, min: 0, max: 100, default: 0 },
+    severityColor: { type: String, enum: ["red", "yellow", "green"], default: "green" },
     age: { type: Number, min: 0, max: 120, default: null },
     temperature: { type: Number, min: 30, max: 45, default: null },
     heartRate: { type: Number, min: 20, max: 260, default: null },

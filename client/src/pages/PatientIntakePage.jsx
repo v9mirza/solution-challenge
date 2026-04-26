@@ -4,7 +4,6 @@ import { api } from "../lib/api.js";
 
 export function PatientIntakePage() {
   const [symptoms, setSymptoms] = useState("");
-  const [severity, setSeverity] = useState(30);
   const [age, setAge] = useState("");
   const [temperature, setTemperature] = useState("");
   const [heartRate, setHeartRate] = useState("");
@@ -29,7 +28,6 @@ export function PatientIntakePage() {
         method: "POST",
         body: {
           symptoms,
-          severity: Number(severity),
           age,
           temperature,
           heartRate,
@@ -67,17 +65,7 @@ export function PatientIntakePage() {
             className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-          Severity (0–100)
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={severity}
-            onChange={(e) => setSeverity(e.target.value)}
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none ring-teal-200 transition focus:border-teal-600 focus:ring"
-          />
-        </label>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
             Age

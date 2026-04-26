@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { computePriorityScore, suggestBedType } from "../engine/scoring.js";
 import { Patient, SystemState } from "../models/index.js";
+import Groq from "groq-sdk";
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
@@ -57,6 +58,7 @@ function formatPatientListItem(p) {
     tokenId: p.tokenId,
     symptoms: p.symptoms,
     severity: p.severity,
+    severityColor: p.severityColor,
     age: p.age,
     temperature: p.temperature,
     heartRate: p.heartRate,
@@ -123,6 +125,7 @@ export const patientService = {
         tokenId: patient.tokenId,
         symptoms: patient.symptoms,
         severity: patient.severity,
+        severityColor: patient.severityColor,
         age: patient.age,
         temperature: patient.temperature,
         heartRate: patient.heartRate,
@@ -250,7 +253,7 @@ export const patientService = {
   },
 
   async submitIntake(userId, body) {
-    const {
+    let {
       symptoms,
       severity,
       age,
@@ -264,6 +267,32 @@ export const patientService = {
       existingConditions,
       allergies,
     } = body;
+
+    let severityColor = "green";
+    if (symptoms && symptoms.trim() !== "") {
+      try {
+        const groq = new Groq({ apiKey: process.env.GROQ_KEY });
+        const chatCompletion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: "You are a medical triage assistant. Given the symptoms, determine the severity percentage (0-100) and severity color ('red' for more serious, 'yellow' for serious, 'green' for safe). Reply in strictly valid JSON format like: { \"percentage\": 85, \"color\": \"red\" }"
+            },
+            {
+              role: "user",
+              content: `Symptoms: ${symptoms}`
+            }
+          ],
+          model: "llama-3.1-8b-instant",
+          response_format: { type: "json_object" }
+        });
+        const aiResult = JSON.parse(chatCompletion.choices[0]?.message?.content || '{"percentage": 0, "color": "green"}');
+        severity = aiResult.percentage;
+        severityColor = aiResult.color;
+      } catch (err) {
+        console.error("Groq API error:", err);
+      }
+    }
 
     if (severity !== undefined) {
       const s = Number(severity);
@@ -299,6 +328,7 @@ export const patientService = {
         tokenId: randomBytes(12).toString("hex"),
         symptoms: symptoms ?? "",
         severity: severity ?? 0,
+        severityColor: severityColor,
         age: parsedAge,
         temperature: parsedTemperature,
         heartRate: parsedHeartRate,
@@ -316,6 +346,7 @@ export const patientService = {
     } else {
       if (symptoms !== undefined) patient.symptoms = symptoms;
       if (severity !== undefined) patient.severity = severity;
+      patient.severityColor = severityColor;
       if (age !== undefined) patient.age = parsedAge;
       if (temperature !== undefined) patient.temperature = parsedTemperature;
       if (heartRate !== undefined) patient.heartRate = parsedHeartRate;
@@ -357,6 +388,7 @@ export const patientService = {
       patientId: patient._id,
       tokenId: patient.tokenId,
       severity: patient.severity,
+      severityColor: patient.severityColor,
       vitalsBoost,
       urgencyScore: patient.urgencyScore,
       bedType: patient.bedType,
