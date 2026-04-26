@@ -98,168 +98,211 @@ export function HomePage() {
   }, [canViewOpsSnapshot, role]);
 
   return (
-    <section className="space-y-10">
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-[radial-gradient(circle_at_top_right,_#0f766e_0%,_#115e59_42%,_#1e3a8a_100%)] p-7 text-white shadow-2xl sm:p-10">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-white/20 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-cyan-200/25 blur-2xl" />
+    <div className="space-y-16 pb-16">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0a0f1c] text-white shadow-2xl">
+        <div className="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/20 blur-[100px]" />
+        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-blue-600/20 blur-[100px]" />
+        <div className="absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/10 blur-[120px]" />
 
-        <div className="grid items-end gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div>
-            <span className="inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
-              Smart Hospital Decision Engine
-            </span>
-            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Prioritize critical patients and allocate beds in real time.
+        <div className="relative z-10 grid items-center gap-12 p-8 sm:p-16 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-500"></span>
+              </span>
+              Smart Hospital Triage OS
+            </div>
+            <h1 className="mt-8 text-5xl font-black leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
+              Intelligent Care.<br />
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent">
+                Zero Bottlenecks.
+              </span>
             </h1>
-            <p className="mt-4 max-w-2xl text-base text-cyan-50 sm:text-lg">
-              A modern triage workflow for hospitals: urgency-aware queueing, explainable scoring,
-              and capacity-aware assignment so the right patient gets care first.
+            <p className="mt-6 text-lg leading-relaxed text-slate-300 sm:text-xl">
+              A modern, AI-assisted triage workflow for world-class hospitals. Experience urgency-aware queueing, transparent scoring, and automated capacity assignment.
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 to={primaryCtaHref}
-                className="rounded-lg bg-white px-5 py-2.5 font-semibold text-teal-800 transition hover:translate-y-[-1px] hover:bg-teal-50"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-[#0a0f1c] transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)]"
               >
-                {primaryCtaLabel}
+                <span className="relative z-10 flex items-center gap-2">
+                  {primaryCtaLabel}
+                  <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
               </Link>
               <Link
                 to={secondaryCtaHref}
-                className="rounded-lg border border-white/40 bg-transparent px-5 py-2.5 font-semibold text-white transition hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10"
               >
                 {secondaryCtaLabel}
               </Link>
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-            <p className="text-xs uppercase tracking-wide text-cyan-50">{snapshotLabel}</p>
-            <div className="mt-3 space-y-3">
-              <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-                <p className="text-xs text-cyan-50">Critical in queue</p>
-                <p className="text-2xl font-bold">{snapshot.criticalInQueue}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-                  <p className="text-xs text-cyan-50">ICU load</p>
-                  <p className="text-lg font-semibold">{snapshot.icuLoad}</p>
-                </div>
-                <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-                  <p className="text-xs text-cyan-50">General load</p>
-                  <p className="text-lg font-semibold">{snapshot.generalLoad}</p>
+          <aside className="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md shadow-2xl">
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-50" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">{snapshotLabel}</p>
+                <div className="flex gap-1">
+                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse"></div>
+                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse delay-75"></div>
+                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse delay-150"></div>
                 </div>
               </div>
-              <div className="rounded-xl border border-emerald-200/60 bg-emerald-300/20 p-3">
-                <p className="text-xs text-emerald-50">Avg wait time</p>
-                <p className="text-lg font-semibold">{snapshot.avgMinutes}</p>
+              
+              <div className="space-y-4">
+                <div className="group rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+                  <p className="text-sm font-medium text-slate-400">Critical in Queue</p>
+                  <p className="mt-1 text-4xl font-black text-white">{snapshot.criticalInQueue}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs font-medium text-slate-400">ICU Load</p>
+                    <p className="mt-1 text-2xl font-bold text-white">{snapshot.icuLoad}</p>
+                    {snapshot.icuLoad !== "—" && (
+                      <div className="mt-3 h-1 w-full rounded-full bg-white/10">
+                        <div className="h-full rounded-full bg-rose-500" style={{ width: snapshot.icuLoad }}></div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs font-medium text-slate-400">General Load</p>
+                    <p className="mt-1 text-2xl font-bold text-white">{snapshot.generalLoad}</p>
+                    {snapshot.generalLoad !== "—" && (
+                      <div className="mt-3 h-1 w-full rounded-full bg-white/10">
+                        <div className="h-full rounded-full bg-cyan-500" style={{ width: snapshot.generalLoad }}></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                  <p className="text-sm font-medium text-cyan-200">Average Wait Time</p>
+                  <p className="mt-1 text-3xl font-black text-cyan-400">{snapshot.avgMinutes}</p>
+                </div>
               </div>
             </div>
           </aside>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-            <p className="text-2xl font-bold">Real-time</p>
-            <p className="text-sm text-cyan-50">Live priority recalculation and queue updates</p>
+        <div className="relative z-10 grid divide-y divide-white/10 border-t border-white/10 bg-white/5 backdrop-blur-sm sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="p-8 text-center transition-colors hover:bg-white/5">
+            <p className="text-2xl font-black text-white">Real-Time</p>
+            <p className="mt-2 text-sm text-slate-400">Live priority recalculation and instantaneous queue updates.</p>
           </div>
-          <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-            <p className="text-2xl font-bold">Explainable</p>
-            <p className="text-sm text-cyan-50">Transparent urgency score reasoning</p>
+          <div className="p-8 text-center transition-colors hover:bg-white/5">
+            <p className="text-2xl font-black text-white">Explainable</p>
+            <p className="mt-2 text-sm text-slate-400">Transparent urgency score reasoning without hidden algorithms.</p>
           </div>
-          <div className="rounded-xl border border-white/20 bg-white/10 p-3">
-            <p className="text-2xl font-bold">Role-based</p>
-            <p className="text-sm text-cyan-50">User and staff-specific workflows</p>
+          <div className="p-8 text-center transition-colors hover:bg-white/5">
+            <p className="text-2xl font-black text-white">Role-Based</p>
+            <p className="mt-2 text-sm text-slate-400">Purpose-built workflows for patients, nurses, and doctors.</p>
           </div>
         </div>
+      </section>
+
+      {/* Features Grid */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          { title: "Urgency-First Queue", desc: "Critical patients automatically bypass earlier, milder cases to receive immediate attention." },
+          { title: "Smart Bed Allocation", desc: "ICU and general ward assignments adapt dynamically to your hospital's real-time capacity." },
+          { title: "Symptom Intelligence", desc: "Advanced keyword recognition elevates priority for emergency symptoms instantly." },
+          { title: "Frictionless Operations", desc: "Distinct, uncluttered interfaces tailored perfectly for staff efficiency and patient ease." }
+        ].map((feature, i) => (
+          <article key={i} className="group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-500/10">
+            <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-slate-50 opacity-50 transition-transform duration-500 group-hover:scale-150 group-hover:bg-cyan-50" />
+            <h2 className="relative z-10 text-xl font-bold text-slate-900">{feature.title}</h2>
+            <p className="relative z-10 mt-3 leading-relaxed text-slate-600">{feature.desc}</p>
+          </article>
+        ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-          <h2 className="text-lg font-semibold text-slate-900">Urgency-first queue</h2>
-          <p className="mt-2 text-sm text-slate-600">Critical patients can move above earlier mild cases.</p>
-        </article>
-        <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-          <h2 className="text-lg font-semibold text-slate-900">Resource-aware assignment</h2>
-          <p className="mt-2 text-sm text-slate-600">ICU/general assignment adapts to available capacity.</p>
-        </article>
-        <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-          <h2 className="text-lg font-semibold text-slate-900">Symptom intelligence</h2>
-          <p className="mt-2 text-sm text-slate-600">Emergency symptom cues boost priority automatically.</p>
-        </article>
-        <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-          <h2 className="text-lg font-semibold text-slate-900">Role-based operations</h2>
-          <p className="mt-2 text-sm text-slate-600">Users and staff each get relevant actions.</p>
-        </article>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-slate-900">How it works</h3>
-          <ol className="mt-4 space-y-3 text-sm text-slate-600">
-            <li className="flex gap-3">
-              <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-                1
-              </span>
-              Patient submits intake details and symptoms.
-            </li>
-            <li className="flex gap-3">
-              <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-                2
-              </span>
-              Decision engine computes urgency score and bed type.
-            </li>
-            <li className="flex gap-3">
-              <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-                3
-              </span>
-              System checks hospital capacity and attempts assignment.
-            </li>
-            <li className="flex gap-3">
-              <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-bold text-teal-800">
-                4
-              </span>
-              Staff dashboard shows priority-sorted queue for action.
-            </li>
-          </ol>
+      {/* How it Works & Roles */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        <article className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm sm:p-12">
+          <h3 className="text-3xl font-black tracking-tight text-slate-900">How it works</h3>
+          <div className="mt-8 space-y-8">
+            {[
+              "Patient submits digital intake details and symptoms securely.",
+              "Decision engine computes a precise urgency score and bed requirement.",
+              "System verifies hospital capacity and attempts automated assignment.",
+              "Staff dashboard presents a priority-sorted, actionable live queue."
+            ].map((step, i) => (
+              <div key={i} className="flex gap-5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-100 text-lg font-black text-cyan-700 shadow-inner">
+                  {i + 1}
+                </span>
+                <p className="pt-1.5 text-lg font-medium text-slate-700">{step}</p>
+              </div>
+            ))}
+          </div>
         </article>
 
-        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-slate-900">Role access</h3>
-          <div className="mt-4 space-y-3 text-sm">
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p className="font-semibold text-slate-900">User</p>
-              <p className="text-slate-600">Submit intake, view token, urgency score, and assignment status.</p>
+        <article className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm sm:p-12">
+          <h3 className="text-3xl font-black tracking-tight text-slate-900">Access Portals</h3>
+          <div className="mt-8 space-y-6">
+            <div className="group rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-100">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900">Patient Portal</h4>
+              </div>
+              <p className="mt-4 text-slate-600 leading-relaxed">Secure environment to submit symptoms, monitor priority scores, view digital tokens, and track live assignment status.</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p className="font-semibold text-slate-900">Staff</p>
-              <p className="text-slate-600">View ranked queue and update hospital bed occupancy in real time.</p>
+            
+            <div className="group rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all hover:border-teal-200 hover:shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600 group-hover:bg-teal-100">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900">Staff Command Center</h4>
+              </div>
+              <p className="mt-4 text-slate-600 leading-relaxed">Comprehensive view of the ranked queue, real-time bed capacity management, and priority override controls.</p>
             </div>
           </div>
         </article>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-        <h3 className="text-2xl font-semibold text-slate-900">Ready to use Smart Hospital?</h3>
-        <p className="mt-2 text-slate-600">
-          Start triaging smarter with real-time prioritization and transparent decisions.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+      {/* Bottom CTA */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white py-16 text-center shadow-lg">
+        <div className="absolute -top-24 left-1/2 h-48 w-96 -translate-x-1/2 rounded-full bg-cyan-400/20 blur-[80px]" />
+        
+        <div className="relative z-10 mx-auto max-w-2xl px-6">
+          <h3 className="text-4xl font-black tracking-tight text-slate-900">Ready to transform your triage?</h3>
+          <p className="mt-4 text-lg text-slate-600">
+            Deploy our intelligent prioritization engine to ensure the right patient gets care at the exact right moment.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
-            to={primaryCtaHref}
-            className="rounded-lg bg-teal-700 px-5 py-2.5 font-semibold text-white transition hover:bg-teal-800"
+              to={primaryCtaHref}
+              className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-8 py-4 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-1 hover:shadow-cyan-500/50"
             >
-            {primaryCtaLabel}
-          </Link>
-          {!isAuthed ? (
-            <Link
-              to="/login"
-              className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50"
-            >
-              Log in
+              {primaryCtaLabel}
             </Link>
-          ) : null}
+            {!isAuthed && (
+              <Link
+                to="/login"
+                className="rounded-xl border-2 border-slate-200 bg-transparent px-8 py-4 font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                Sign In to Portal
+              </Link>
+            )}
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
