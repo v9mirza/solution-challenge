@@ -2,8 +2,9 @@
 
 **Solution Challenge Project 2026**
 
-A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for real-time triage, dynamic prioritization, and capacity-aware bed decisions. This is a decision-support system, not a static FIFO queue.
+A MERN-stack application (MongoDB, Express, React, Node.js) designed for real-time triage, dynamic prioritization, and capacity-aware bed allocation decisions.
 
+This system functions as a decision-support platform, not a traditional static FIFO queue, enabling intelligent and responsive patient flow management.
 ---
 
 ## Contents
