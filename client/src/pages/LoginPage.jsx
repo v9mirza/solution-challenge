@@ -11,6 +11,14 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname;
+  const demoAccounts = [
+    { role: "Patient", email: "patient1@test.com", password: "123456" },
+    { role: "Staff", email: "staff1@test.com", password: "123456" },
+  ];
+  const roleButtonStyles = {
+    Patient: "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100",
+    Staff: "border-violet-200 bg-violet-50 text-violet-800 hover:bg-violet-100",
+  };
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -87,6 +95,41 @@ export function LoginPage() {
               {loading ? "Authenticating…" : "Sign In"}
             </button>
           </form>
+
+          <div className="mt-5 rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50/80 to-blue-50/70 p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-cyan-900">Demo Accounts</p>
+              <span className="rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-medium text-cyan-700">
+                Quick Access
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-slate-600">Choose a role to auto-fill login credentials.</p>
+            <div className="mt-3 space-y-2">
+              {demoAccounts.map((account) => (
+                <div
+                  key={account.role}
+                  className="rounded-xl border border-cyan-100 bg-white/90 p-3"
+                >
+                  <div className="text-sm text-slate-700">
+                    <div className="font-semibold text-slate-800">{account.role} Demo</div>
+                    <div className="mt-0.5 text-xs sm:text-sm">{account.email} / {account.password}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail(account.email);
+                      setPassword(account.password);
+                    }}
+                    className={`mt-3 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition ${
+                      roleButtonStyles[account.role]
+                    }`}
+                  >
+                    Login as {account.role}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
           
           <div className="mt-8 text-center text-sm text-slate-600">
             Don't have an account yet?{" "}
