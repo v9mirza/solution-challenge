@@ -101,21 +101,34 @@ Public staff signup is intentionally not exposed.
   - lifecycle status
   - staff note
 
-### Staff features
+### Staff Features
+1. Queue Management
+View prioritized patient queue
+Filter queue based on requirements
+Export queue reports in CSV format
+2. Capacity Management
+Update global capacity limits
+Built-in validation with auto-capping to prevent over-allocation
+3. Patient Lifecycle Management
 
-- view prioritized queue
-- update global capacity (with validation + auto-capping)
-- patient lifecycle actions:
-  - `waiting`, `in_progress`, `admitted`, `discharged`, `cancelled`
-- add/update patient staff notes
-- apply/clear manual priority override with reason
-- staff governance:
-  - create staff users
-  - enable/disable staff users
-  - reset staff password (marks `mustResetPassword`)
-- reporting:
-  - filter queue
-  - export CSV report
+Manage patient status through all stages:
+
+Waiting
+In Progress
+Admitted
+Discharged
+Cancelled
+4. Patient Notes & Prioritization
+Add or update staff notes for patients
+Apply manual priority override with reason
+Clear priority override when no longer required
+5. Staff Governance
+Create new staff accounts
+Enable / Disable staff users
+Reset passwords with force password change on next login
+6. Reporting & Monitoring
+Generate filtered reports
+Export data for analysis and record keeping
 
 ### Safety and validation
 
