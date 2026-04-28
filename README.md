@@ -5,6 +5,7 @@
 A MERN-stack application (MongoDB, Express, React, Node.js) designed for real-time triage, dynamic prioritization, and capacity-aware bed allocation decisions.
 
 This system functions as a decision-support platform, not a traditional static FIFO queue, enabling intelligent and responsive patient flow management.
+
 ---
 
 ## Contents
@@ -22,17 +23,13 @@ This system functions as a decision-support platform, not a traditional static F
 
 ## Project overview
 
-Here’s a shorter, clearer, hackathon-ready version without changing meaning:
-
----
-
 The system improves triage by combining:
 
-* Patient symptoms and vitals intake
-* Explainable urgency scoring
-* Bed suggestions (ICU / General / None)
-* Real-time capacity inputs
-* Role-based actions for staff
+- patient symptoms and vitals intake
+- explainable urgency scoring
+- bed suggestions (`icu` / `general` / `none`)
+- real-time capacity inputs
+- role-based actions for staff
 
 Instead of FIFO, patients are continuously ranked based on urgency and context.
 
@@ -64,7 +61,7 @@ The project now uses a **single system-wide capacity state** (no multi-hospital 
 - one `SystemState` document stores:
   - `icuTotal`, `icuOccupied`
   - `generalTotal`, `generalOccupied`
-- staff updates this via `/api/capacity`
+- staff updates this through `/api/capacity`
 
 ---
 
@@ -81,7 +78,7 @@ There are **2 roles**:
 
 - shared login endpoint for both roles: `POST /api/auth/login`
 - public signup endpoint creates `user` only: `POST /api/auth/register`
-- JWT carries role for route protection
+- JWT carries the role for route protection
 
 ### Staff account creation
 
@@ -98,42 +95,41 @@ Public staff signup is intentionally not exposed.
 ### User features
 
 - sign up and log in
-- submit/update intake data (symptoms + vitals)
+- submit or update intake data (symptoms + vitals)
 - view:
-  - token
+  - queue token
   - urgency score
   - suggested bed type
   - lifecycle status
   - staff note
 
-### Staff Features
-1. Queue Management
-View prioritized patient queue
-Filter queue based on requirements
-Export queue reports in CSV format
-2. Capacity Management
-Update global capacity limits
-Built-in validation with auto-capping to prevent over-allocation
-3. Patient Lifecycle Management
+### Staff features
 
-Manage patient status through all stages:
-
-Waiting
-In Progress
-Admitted
-Discharged
-Cancelled
-4. Patient Notes & Prioritization
-Add or update staff notes for patients
-Apply manual priority override with reason
-Clear priority override when no longer required
-5. Staff Governance
-Create new staff accounts
-Enable / Disable staff users
-Reset passwords with force password change on next login
-6. Reporting & Monitoring
-Generate filtered reports
-Export data for analysis and record keeping
+1. **Queue management**
+   - view prioritized patient queue
+   - filter queue based on requirements
+   - export queue reports in CSV format
+2. **Capacity management**
+   - update global capacity limits
+   - built-in validation with auto-capping to prevent over-allocation
+3. **Patient lifecycle management**
+   - manage patient status through all stages:
+     - waiting
+     - in progress
+     - admitted
+     - discharged
+     - cancelled
+4. **Patient notes and prioritization**
+   - add or update staff notes for patients
+   - apply manual priority override with reason
+   - clear priority override when no longer required
+5. **Staff governance**
+   - create new staff accounts
+   - enable/disable staff users
+   - reset passwords with force password change on next login
+6. **Reporting and monitoring**
+   - generate filtered reports
+   - export data for analysis and record keeping
 
 ### Safety and validation
 
@@ -225,6 +221,17 @@ npm run dev
 
 Default app URL: `http://localhost:5173`
 
+### Demo credentials (development only)
+
+Use these for local demo/testing only:
+
+- **Patient**
+  - Email: `patient1@test.com`
+  - Password: `123456`
+- **Staff**
+  - Email: `staff1@test.com`
+  - Password: `123456`
+
 ---
 
 ## Workflow
@@ -245,7 +252,7 @@ Default app URL: `http://localhost:5173`
 ### Current state
 
 - single-capacity model is active
-- no multi-hospital routing in current implementation
+- no multi-hospital routing in the current implementation
 
 ### Possible next upgrades
 
