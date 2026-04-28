@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { api, getAuthToken } from "../lib/api.js";
+import { getAuthToken } from "../lib/api.js";
 import { parseJwtPayload } from "../lib/jwt.js";
 
 export function HomePage() {
@@ -19,73 +18,6 @@ export function HomePage() {
     : role === "user"
       ? "View live status"
       : "Open live queue";
-  const canViewOpsSnapshot = role === "staff";
-
-  const [snapshot, setSnapshot] = useState({
-    criticalInQueue: "—",
-    icuLoad: "—",
-    generalLoad: "—",
-    totalInQueue: "—",
-  });
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadSnapshot() {
-      if (!canViewOpsSnapshot) {
-        setSnapshot({
-          criticalInQueue: "—",
-          icuLoad: "—",
-          generalLoad: "—",
-          totalInQueue: "—",
-        });
-        return;
-      }
-
-      try {
-        const [patientsRes, capacityRes] = await Promise.all([api("/patients"), api("/capacity")]);
-        if (cancelled) return;
-
-        const patients = patientsRes?.patients ?? [];
-        const criticalInQueue = patients.filter((p) => Number(p.urgencyScore) >= 70).length;
-        const totalInQueue = patients.length;
-        const totals = {
-          icuTotal: Number(capacityRes?.capacity?.icuTotal || 0),
-          icuOccupied: Number(capacityRes?.capacity?.icuOccupied || 0),
-          generalTotal: Number(capacityRes?.capacity?.generalTotal || 0),
-          generalOccupied: Number(capacityRes?.capacity?.generalOccupied || 0),
-        };
-
-        const icuLoad =
-          totals.icuTotal > 0 ? `${Math.round((totals.icuOccupied / totals.icuTotal) * 100)}%` : "—";
-        const generalLoad =
-          totals.generalTotal > 0
-            ? `${Math.round((totals.generalOccupied / totals.generalTotal) * 100)}%`
-            : "—";
-
-        setSnapshot({ criticalInQueue, icuLoad, generalLoad, totalInQueue });
-      } catch {
-        if (cancelled) return;
-        setSnapshot({
-          criticalInQueue: "—",
-          icuLoad: "—",
-          generalLoad: "—",
-          totalInQueue: "—",
-        });
-      }
-    }
-
-    loadSnapshot();
-    return () => {
-      cancelled = true;
-    };
-  }, [canViewOpsSnapshot]);
-
-  const snapshotLabel = useMemo(() => {
-    if (canViewOpsSnapshot) return "Live triage snapshot";
-    if (role === "user") return "Ops snapshot (staff only)";
-    return "Ops snapshot (login as staff)";
-  }, [canViewOpsSnapshot, role]);
 
   return (
     <div className="space-y-16 pb-16">
@@ -137,46 +69,37 @@ export function HomePage() {
 
           <aside className="relative rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md shadow-2xl">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-50" />
-            <div className="relative">
-              <div className="flex items-center justify-between mb-6">
-                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">{snapshotLabel}</p>
-                <div className="flex gap-1">
-                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse"></div>
-                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse delay-75"></div>
-                  <div className="h-2 w-2 rounded-full bg-slate-600 animate-pulse delay-150"></div>
+            <div className="relative space-y-6">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Why teams choose this</p>
+                <div className="mt-4 space-y-3">
+                  {[
+                    "Urgency-first queueing keeps critical patients prioritized.",
+                    "Transparent scoring helps staff and patients trust decisions.",
+                    "Live status tracking reduces uncertainty at every step.",
+                  ].map((item) => (
+                    <div key={item} className="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
+                      <p className="text-sm text-slate-200">{item}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
-              
-              <div className="space-y-4">
-                <div className="group rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
-                  <p className="text-sm font-medium text-slate-400">Critical in Queue</p>
-                  <p className="mt-1 text-4xl font-black text-white">{snapshot.criticalInQueue}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-medium text-slate-400">ICU Load</p>
-                    <p className="mt-1 text-2xl font-bold text-white">{snapshot.icuLoad}</p>
-                    {snapshot.icuLoad !== "—" && (
-                      <div className="mt-3 h-1 w-full rounded-full bg-white/10">
-                        <div className="h-full rounded-full bg-rose-500" style={{ width: snapshot.icuLoad }}></div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-medium text-slate-400">General Load</p>
-                    <p className="mt-1 text-2xl font-bold text-white">{snapshot.generalLoad}</p>
-                    {snapshot.generalLoad !== "—" && (
-                      <div className="mt-3 h-1 w-full rounded-full bg-white/10">
-                        <div className="h-full rounded-full bg-cyan-500" style={{ width: snapshot.generalLoad }}></div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                  <p className="text-sm font-medium text-cyan-200">Total Patients in Queue</p>
-                  <p className="mt-1 text-3xl font-black text-cyan-400">{snapshot.totalInQueue}</p>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Quick links</p>
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Link
+                    to="/signup"
+                    className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#0a0f1c] transition hover:brightness-95"
+                  >
+                    Create Account
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                  >
+                    Sign In
+                  </Link>
                 </div>
               </div>
             </div>
