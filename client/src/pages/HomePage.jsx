@@ -25,7 +25,7 @@ export function HomePage() {
     criticalInQueue: "—",
     icuLoad: "—",
     generalLoad: "—",
-    avgMinutes: "—",
+    totalInQueue: "—",
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function HomePage() {
           criticalInQueue: "—",
           icuLoad: "—",
           generalLoad: "—",
-          avgMinutes: "—",
+          totalInQueue: "—",
         });
         return;
       }
@@ -48,6 +48,7 @@ export function HomePage() {
 
         const patients = patientsRes?.patients ?? [];
         const criticalInQueue = patients.filter((p) => Number(p.urgencyScore) >= 70).length;
+        const totalInQueue = patients.length;
         const totals = {
           icuTotal: Number(capacityRes?.capacity?.icuTotal || 0),
           icuOccupied: Number(capacityRes?.capacity?.icuOccupied || 0),
@@ -62,25 +63,14 @@ export function HomePage() {
             ? `${Math.round((totals.generalOccupied / totals.generalTotal) * 100)}%`
             : "—";
 
-        const now = Date.now();
-        const waitTimes = patients
-          .map((p) =>
-            p.queuedAt ? Math.max(0, Math.floor((now - new Date(p.queuedAt).getTime()) / 60000)) : null
-          )
-          .filter((m) => m !== null);
-        const avgMinutes =
-          waitTimes.length > 0
-            ? `${Math.round(waitTimes.reduce((sum, minutes) => sum + minutes, 0) / waitTimes.length)} min`
-            : "—";
-
-        setSnapshot({ criticalInQueue, icuLoad, generalLoad, avgMinutes });
+        setSnapshot({ criticalInQueue, icuLoad, generalLoad, totalInQueue });
       } catch {
         if (cancelled) return;
         setSnapshot({
           criticalInQueue: "—",
           icuLoad: "—",
           generalLoad: "—",
-          avgMinutes: "—",
+          totalInQueue: "—",
         });
       }
     }
@@ -185,8 +175,8 @@ export function HomePage() {
                 </div>
                 
                 <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                  <p className="text-sm font-medium text-cyan-200">Average Wait Time</p>
-                  <p className="mt-1 text-3xl font-black text-cyan-400">{snapshot.avgMinutes}</p>
+                  <p className="text-sm font-medium text-cyan-200">Total Patients in Queue</p>
+                  <p className="mt-1 text-3xl font-black text-cyan-400">{snapshot.totalInQueue}</p>
                 </div>
               </div>
             </div>
