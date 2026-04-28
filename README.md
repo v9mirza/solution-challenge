@@ -22,15 +22,19 @@ This system functions as a decision-support platform, not a traditional static F
 
 ## Project overview
 
-The system improves triage operations by combining:
+Here’s a shorter, clearer, hackathon-ready version without changing meaning:
 
-- patient symptom/vitals intake
-- explainable urgency scoring
-- bed-type suggestion (`icu` / `general` / `none`)
-- live capacity pressure inputs
-- role-based operations for frontline staff
+---
 
-Instead of simple first-come-first-served ordering, patients are continuously ranked by urgency context.
+The system improves triage by combining:
+
+* Patient symptoms and vitals intake
+* Explainable urgency scoring
+* Bed suggestions (ICU / General / None)
+* Real-time capacity inputs
+* Role-based actions for staff
+
+Instead of FIFO, patients are continuously ranked based on urgency and context.
 
 ---
 
