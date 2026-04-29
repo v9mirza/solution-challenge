@@ -49,18 +49,18 @@ export function PatientIntakePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-6">
-      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:p-6">
+      <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
         <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
         
         <div className="relative z-10">
           <div className="mb-8 flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-6 sm:flex-row sm:items-end">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Patient Intake</h1>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Patient Intake</h1>
               <p className="mt-2 text-sm text-slate-500">Provide accurate details for immediate triage processing.</p>
             </div>
-            <div className="flex gap-3 text-sm font-semibold">
+            <div className="flex flex-wrap gap-3 text-sm font-semibold">
               <Link to="/patient" className="rounded-lg border border-slate-200 bg-white/50 px-4 py-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 shadow-sm">
                 Portal Home
               </Link>
@@ -239,11 +239,11 @@ export function PatientIntakePage() {
               </div>
             ) : null}
 
-            <div className="flex justify-end pt-2">
+            <div className="flex pt-2 sm:justify-end">
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:pointer-events-none disabled:opacity-70"
+                className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:pointer-events-none disabled:opacity-70 sm:w-auto sm:px-8 sm:text-lg"
               >
                 {loading ? "Submitting…" : "Submit Intake"}
               </button>

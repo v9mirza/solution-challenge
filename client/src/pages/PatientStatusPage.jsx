@@ -37,7 +37,7 @@ export function PatientStatusPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl p-6">
+      <div className="mx-auto max-w-2xl px-4 py-6 sm:p-6">
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-rose-700 shadow-sm">
           {error}
         </div>
@@ -49,15 +49,15 @@ export function PatientStatusPage() {
   
   if (!p) {
     return (
-      <div className="mx-auto max-w-2xl p-6">
-        <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-10 text-center shadow-2xl backdrop-blur-xl">
+      <div className="mx-auto max-w-2xl px-4 py-6 sm:p-6">
+        <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 text-center shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
           <div className="absolute -left-16 -top-16 h-32 w-32 rounded-full bg-cyan-400/20 blur-3xl" />
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Your Priority Status</h1>
           <p className="mt-3 text-lg text-slate-500">We don't have an active intake on file for you.</p>
           <div className="mt-8">
             <Link 
               to="/patient/intake"
-              className="inline-flex rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/30"
+              className="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/30 sm:w-auto sm:py-3"
             >
               Submit Intake Form
             </Link>
@@ -68,8 +68,8 @@ export function PatientStatusPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:p-6">
+      <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
         <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
         

@@ -215,12 +215,12 @@ export function StaffDashboardPage() {
   return (
     <div className="space-y-8 pb-10">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-2xl sm:rounded-3xl sm:p-8">
         <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
         <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Staff Dashboard</h1>
+            <h1 className="text-2xl font-black tracking-tight sm:text-4xl">Staff Dashboard</h1>
             <p className="mt-2 text-slate-300">Command Center for intelligent triage and capacity management.</p>
           </div>
           {error ? (
@@ -316,8 +316,8 @@ export function StaffDashboardPage() {
                   />
                 </label>
               </div>
-              <div className="mt-5 flex justify-end">
-                <button type="submit" className="rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg">
+              <div className="mt-5 flex sm:justify-end">
+                <button type="submit" className="w-full rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-auto">
                   Save Changes
                 </button>
               </div>
@@ -346,7 +346,7 @@ export function StaffDashboardPage() {
             onChange={(e) => setStaffForm((f) => ({ ...f, password: e.target.value }))}
             className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-2.5 text-slate-900 outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
           />
-          <button type="submit" className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-2.5 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40">
+          <button type="submit" className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-2.5 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 sm:w-auto">
             Create Staff
           </button>
         </form>
@@ -439,7 +439,7 @@ export function StaffDashboardPage() {
             type="number" min="0" max="100" placeholder="Min Urgency (0-100)" value={queueUrgencyMin} onChange={(e) => setQueueUrgencyMin(e.target.value)}
             className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-2 text-slate-900 outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
           />
-          <button onClick={exportCsv} className="rounded-xl border border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+          <button onClick={exportCsv} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 sm:w-auto">
             Export CSV
           </button>
         </div>

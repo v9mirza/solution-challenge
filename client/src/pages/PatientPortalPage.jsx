@@ -2,15 +2,15 @@ import { Link } from "react-router-dom";
 
 export function PatientPortalPage() {
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur-xl sm:p-12">
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:p-6">
+      <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-12">
         <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
         <div className="absolute -bottom-12 -right-12 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
         
         <div className="relative z-10">
           <div className="mb-8 border-b border-slate-200/60 pb-6">
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Patient Portal</h1>
-            <p className="mt-3 text-lg text-slate-600">Manage your intake details, monitor your priority score, and track your queue status in real-time.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Patient Portal</h1>
+            <p className="mt-2 text-base text-slate-600 sm:mt-3 sm:text-lg">Manage your intake details, monitor your priority score, and track your queue status in real-time.</p>
           </div>
           
           <div className="grid gap-6 sm:grid-cols-2">

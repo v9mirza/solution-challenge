@@ -62,7 +62,7 @@ export function ProfilePage() {
   
   if (error) {
     return (
-      <div className="mx-auto max-w-xl p-6">
+      <div className="mx-auto max-w-xl px-4 py-6 sm:p-6">
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center shadow-sm">
           <p className="text-rose-700">{error}</p>
         </div>
@@ -72,7 +72,7 @@ export function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-xl p-6">
+      <div className="mx-auto max-w-xl px-4 py-6 sm:p-6">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
           <p className="text-slate-600">No profile data found.</p>
         </div>
@@ -84,18 +84,18 @@ export function ProfilePage() {
   const updated = user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "—";
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:p-6">
+      <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
         <div className="absolute -left-32 -top-32 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
         <div className="absolute -bottom-32 -right-32 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
         
         <div className="relative z-10">
-          <div className="mb-8 flex items-center gap-6 border-b border-slate-200/60 pb-8">
+          <div className="mb-8 flex flex-col items-center gap-6 border-b border-slate-200/60 pb-8 text-center sm:flex-row sm:text-left">
             <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 text-3xl font-bold text-cyan-800 shadow-inner">
               {user.fullName ? user.fullName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{user.fullName || "User Profile"}</h1>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{user.fullName || "User Profile"}</h1>
               <p className="mt-1 text-slate-500">{user.email}</p>
               <div className="mt-2 inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-600">
                 {user.role} Account
@@ -156,7 +156,7 @@ export function ProfilePage() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40"
+                  className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 sm:w-auto sm:py-2.5"
                 >
                   {link.label}
                 </Link>

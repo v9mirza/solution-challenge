@@ -35,8 +35,8 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center p-6">
-      <section className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/20 bg-white/70 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-8 sm:p-6">
+      <section className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
         <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-cyan-400/20 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
         
