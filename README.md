@@ -2,7 +2,9 @@
 
 **Solution Challenge Project 2026**
 
-A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for real-time triage, dynamic prioritization, and capacity-aware bed decisions. This is a decision-support system, not a static FIFO queue.
+A MERN-stack application (MongoDB, Express, React, Node.js) designed for real-time triage, dynamic prioritization, and capacity-aware bed allocation decisions.
+
+This system functions as a decision-support platform, not a traditional static FIFO queue, enabling intelligent and responsive patient flow management.
 
 ---
 
@@ -21,15 +23,15 @@ A MERN-stack app (**MongoDB**, **Express**, **React**, **Node.js**) for real-tim
 
 ## Project overview
 
-The system improves triage operations by combining:
+The system improves triage by combining:
 
-- patient symptom/vitals intake
+- patient symptoms and vitals intake
 - explainable urgency scoring
-- bed-type suggestion (`icu` / `general` / `none`)
-- live capacity pressure inputs
-- role-based operations for frontline staff
+- bed suggestions (`icu` / `general` / `none`)
+- real-time capacity inputs
+- role-based actions for staff
 
-Instead of simple first-come-first-served ordering, patients are continuously ranked by urgency context.
+Instead of FIFO, patients are continuously ranked based on urgency and context.
 
 ---
 
@@ -59,7 +61,7 @@ The project now uses a **single system-wide capacity state** (no multi-hospital 
 - one `SystemState` document stores:
   - `icuTotal`, `icuOccupied`
   - `generalTotal`, `generalOccupied`
-- staff updates this via `/api/capacity`
+- staff updates this through `/api/capacity`
 
 ---
 
@@ -76,7 +78,7 @@ There are **2 roles**:
 
 - shared login endpoint for both roles: `POST /api/auth/login`
 - public signup endpoint creates `user` only: `POST /api/auth/register`
-- JWT carries role for route protection
+- JWT carries the role for route protection
 
 ### Staff account creation
 
@@ -93,9 +95,9 @@ Public staff signup is intentionally not exposed.
 ### User features
 
 - sign up and log in
-- submit/update intake data (symptoms + vitals)
+- submit or update intake data (symptoms + vitals)
 - view:
-  - token
+  - queue token
   - urgency score
   - suggested bed type
   - lifecycle status
@@ -103,19 +105,31 @@ Public staff signup is intentionally not exposed.
 
 ### Staff features
 
-- view prioritized queue
-- update global capacity (with validation + auto-capping)
-- patient lifecycle actions:
-  - `waiting`, `in_progress`, `admitted`, `discharged`, `cancelled`
-- add/update patient staff notes
-- apply/clear manual priority override with reason
-- staff governance:
-  - create staff users
-  - enable/disable staff users
-  - reset staff password (marks `mustResetPassword`)
-- reporting:
-  - filter queue
-  - export CSV report
+1. **Queue management**
+   - view prioritized patient queue
+   - filter queue based on requirements
+   - export queue reports in CSV format
+2. **Capacity management**
+   - update global capacity limits
+   - built-in validation with auto-capping to prevent over-allocation
+3. **Patient lifecycle management**
+   - manage patient status through all stages:
+     - waiting
+     - in progress
+     - admitted
+     - discharged
+     - cancelled
+4. **Patient notes and prioritization**
+   - add or update staff notes for patients
+   - apply manual priority override with reason
+   - clear priority override when no longer required
+5. **Staff governance**
+   - create new staff accounts
+   - enable/disable staff users
+   - reset passwords with force password change on next login
+6. **Reporting and monitoring**
+   - generate filtered reports
+   - export data for analysis and record keeping
 
 ### Safety and validation
 
@@ -207,6 +221,17 @@ npm run dev
 
 Default app URL: `http://localhost:5173`
 
+### Demo credentials (development only)
+
+Use these for local demo/testing only:
+
+- **Patient**
+  - Email: `patient1@test.com`
+  - Password: `123456`
+- **Staff**
+  - Email: `staff1@test.com`
+  - Password: `123456`
+
 ---
 
 ## Workflow
@@ -227,7 +252,7 @@ Default app URL: `http://localhost:5173`
 ### Current state
 
 - single-capacity model is active
-- no multi-hospital routing in current implementation
+- no multi-hospital routing in the current implementation
 
 ### Possible next upgrades
 
