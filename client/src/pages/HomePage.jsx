@@ -20,15 +20,15 @@ export function HomePage() {
       : "Open live queue";
 
   return (
-    <div className="space-y-12 pb-12 sm:space-y-16 sm:pb-16">
+    <div className="min-w-0 space-y-12 pb-12 sm:space-y-16 sm:pb-16">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0a0f1c] text-white shadow-2xl">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0a0f1c] text-white shadow-2xl sm:rounded-3xl">
         <div className="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-cyan-500/20 blur-[100px]" />
         <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-blue-600/20 blur-[100px]" />
         <div className="absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-500/10 blur-[120px]" />
 
-        <div className="relative z-10 grid items-center gap-8 p-6 sm:gap-12 sm:p-12 lg:grid-cols-[1.2fr_0.8fr] lg:p-16">
-          <div className="max-w-3xl">
+        <div className="relative z-10 grid items-center gap-10 p-5 sm:gap-12 sm:p-8 md:p-12 lg:grid-cols-[1.2fr_0.8fr] lg:p-16">
+          <div className="max-w-3xl min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
@@ -36,20 +36,20 @@ export function HomePage() {
               </span>
               Smart Hospital Triage OS
             </div>
-            <h1 className="mt-6 text-4xl font-black leading-[1.1] tracking-tight sm:mt-8 sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-[2rem] font-black leading-[1.08] tracking-tight sm:mt-8 sm:text-5xl md:text-6xl lg:text-7xl">
               Intelligent Care.<br />
               <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-teal-400 bg-clip-text text-transparent">
                 Zero Bottlenecks.
               </span>
             </h1>
-            <p className="mt-4 text-base leading-relaxed text-slate-300 sm:mt-6 sm:text-lg md:text-xl">
-              A modern, AI-assisted triage workflow for world-class hospitals. Experience urgency-aware queueing, transparent scoring, and automated capacity assignment.
+            <p className="mt-5 text-base leading-relaxed text-slate-300 sm:mt-6 sm:text-lg md:text-xl">
+              A modern, AI-assisted triage workflow for acute settings. Priority-aware queueing, transparent symptom and queue scoring, and capacity-aware bed suggestions.
             </p>
 
-            <div className="mt-8 flex flex-col items-center gap-4 sm:mt-10 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <Link
                 to={primaryCtaHref}
-                className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-white px-6 py-3.5 font-bold text-[#0a0f1c] transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] sm:w-auto sm:px-8 sm:py-4"
+                className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-[#0a0f1c] transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] sm:w-auto sm:px-8 sm:py-4 sm:text-base"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   {primaryCtaLabel}
@@ -60,23 +60,23 @@ export function HomePage() {
               </Link>
               <Link
                 to={secondaryCtaHref}
-                className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 sm:w-auto sm:px-8 sm:py-4"
+                className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 sm:w-auto sm:px-8 sm:py-4 sm:text-base"
               >
                 {secondaryCtaLabel}
               </Link>
             </div>
           </div>
 
-          <aside className="relative mt-8 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-md sm:mt-0 sm:p-6">
+          <aside className="relative min-w-0 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-md shadow-2xl sm:p-6">
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-50" />
             <div className="relative space-y-6">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Why teams choose this</p>
                 <div className="mt-4 space-y-3">
                   {[
-                    "Urgency-first queueing keeps critical patients prioritized.",
-                    "Transparent scoring helps staff and patients trust decisions.",
-                    "Live status tracking reduces uncertainty at every step.",
+                    "Priority-first ordering keeps unstable cases toward the front of the queue.",
+                    "Separate AI symptom estimates and engine priority scores — both visible.",
+                    "Live intake status and capacity context for patients and staff.",
                   ].map((item) => (
                     <div key={item} className="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
                       <p className="text-sm text-slate-200">{item}</p>
@@ -113,7 +113,7 @@ export function HomePage() {
           </div>
           <div className="p-6 text-center transition-colors hover:bg-white/5 sm:p-8">
             <p className="text-2xl font-black text-white">Explainable</p>
-            <p className="mt-2 text-sm text-slate-400">Transparent urgency score reasoning without hidden algorithms.</p>
+            <p className="mt-2 text-sm text-slate-400">Queue priority factors in vitals, wait time, and occupancy — not symptoms alone.</p>
           </div>
           <div className="p-6 text-center transition-colors hover:bg-white/5 sm:p-8">
             <p className="text-2xl font-black text-white">Role-Based</p>
@@ -123,14 +123,14 @@ export function HomePage() {
       </section>
 
       {/* Features Grid */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid min-w-0 grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { title: "Urgency-First Queue", desc: "Critical patients automatically bypass earlier, milder cases to receive immediate attention." },
+          { title: "Priority-aware queue", desc: "Dynamic ordering blends AI triage cues, vitals escalation, waits, and real bed pressure." },
           { title: "Smart Bed Allocation", desc: "ICU and general ward assignments adapt dynamically to your hospital's real-time capacity." },
           { title: "Symptom Intelligence", desc: "Advanced keyword recognition elevates priority for emergency symptoms instantly." },
           { title: "Frictionless Operations", desc: "Distinct, uncluttered interfaces tailored perfectly for staff efficiency and patient ease." }
         ].map((feature, i) => (
-          <article key={i} className="group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-500/10 sm:p-8">
+          <article key={i} className="group relative min-w-0 overflow-hidden rounded-2xl border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/[0.04] ring-1 ring-slate-200/60 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-cyan-500/10 sm:rounded-3xl sm:p-8">
             <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-slate-50 opacity-50 transition-transform duration-500 group-hover:scale-150 group-hover:bg-cyan-50" />
             <h2 className="relative z-10 text-xl font-bold text-slate-900">{feature.title}</h2>
             <p className="relative z-10 mt-3 leading-relaxed text-slate-600">{feature.desc}</p>
@@ -139,13 +139,13 @@ export function HomePage() {
       </div>
 
       {/* How it Works & Roles */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        <article className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:p-10 lg:p-12">
-          <h3 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">How it works</h3>
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+        <article className="relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:rounded-3xl sm:p-10 lg:p-12">
+          <h3 className="text-3xl font-black tracking-tight text-slate-900">How it works</h3>
           <div className="mt-8 space-y-8">
             {[
               "Patient submits digital intake details and symptoms securely.",
-              "Decision engine computes a precise urgency score and bed requirement.",
+              "Engine derives queue priority and suggested bed tier from severity, vitals, wait, and capacity.",
               "System verifies hospital capacity and attempts automated assignment.",
               "Staff dashboard presents a priority-sorted, actionable live queue."
             ].map((step, i) => (
@@ -159,8 +159,8 @@ export function HomePage() {
           </div>
         </article>
 
-        <article className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:p-10 lg:p-12">
-          <h3 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Access Portals</h3>
+        <article className="relative min-w-0 overflow-hidden rounded-2xl border border-slate-200/60 bg-gradient-to-br from-white to-slate-50 p-6 shadow-sm sm:rounded-3xl sm:p-10 lg:p-12">
+          <h3 className="text-3xl font-black tracking-tight text-slate-900">Access Portals</h3>
           <div className="mt-8 space-y-6">
             <div className="group rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-md">
               <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export function HomePage() {
                 </div>
                 <h4 className="text-xl font-bold text-slate-900">Patient Portal</h4>
               </div>
-              <p className="mt-4 text-slate-600 leading-relaxed">Secure environment to submit symptoms, monitor priority scores, view digital tokens, and track live assignment status.</p>
+              <p className="mt-4 text-slate-600 leading-relaxed">Secure intake, live queue priority vs AI symptom bands, tokens, notes, and bed suggestions in one calm layout.</p>
             </div>
             
             <div className="group rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all hover:border-teal-200 hover:shadow-md">
@@ -190,25 +190,25 @@ export function HomePage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200/60 bg-white py-12 text-center shadow-lg sm:py-16">
-        <div className="absolute -top-24 left-1/2 h-48 w-96 -translate-x-1/2 rounded-full bg-cyan-400/20 blur-[80px]" />
-        
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white py-12 text-center shadow-lg sm:rounded-3xl sm:py-16">
+        <div className="absolute -top-24 left-1/2 h-48 w-96 max-w-[90vw] -translate-x-1/2 rounded-full bg-cyan-400/20 blur-[80px]" />
+
         <div className="relative z-10 mx-auto max-w-2xl px-4 sm:px-6">
-          <h3 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">Ready to transform your triage?</h3>
+          <h3 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">Ready to transform your triage?</h3>
           <p className="mt-4 text-base text-slate-600 sm:text-lg">
             Deploy our intelligent prioritization engine to ensure the right patient gets care at the exact right moment.
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:mt-10 sm:flex-row">
+          <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
             <Link
               to={primaryCtaHref}
-              className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-1 hover:shadow-cyan-500/50 sm:w-auto sm:px-8 sm:py-4"
+              className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-6 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/50 sm:px-8 sm:py-4 sm:text-base"
             >
               {primaryCtaLabel}
             </Link>
             {!isAuthed && (
               <Link
                 to="/login"
-                className="w-full rounded-xl border-2 border-slate-200 bg-transparent px-6 py-3.5 font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 sm:w-auto sm:px-8 sm:py-4"
+                className="rounded-xl border-2 border-slate-200 bg-transparent px-6 py-3.5 text-center text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 sm:px-8 sm:py-4 sm:text-base"
               >
                 Sign In to Portal
               </Link>

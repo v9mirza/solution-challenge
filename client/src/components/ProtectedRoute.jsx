@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { getAuthToken } from "../lib/api.js";
+import { getAuthToken, setAuthToken } from "../lib/api.js";
 import { parseJwtPayload } from "../lib/jwt.js";
 
 export function ProtectedRoute({ roles }) {
@@ -10,11 +10,14 @@ export function ProtectedRoute({ roles }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (roles?.length) {
-    const p = parseJwtPayload(token);
-    if (!p?.role || !roles.includes(p.role)) {
-      return <Navigate to="/" replace />;
-    }
+  const payload = parseJwtPayload(token);
+  if (!payload?.role) {
+    setAuthToken(null);
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (roles?.length && !roles.includes(payload.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

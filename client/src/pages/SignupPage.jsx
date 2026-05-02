@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, setAuthToken } from "../lib/api.js";
+import { AuthPanel, fieldClass } from "../components/PageChrome.jsx";
 
 export function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -26,81 +27,86 @@ export function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 py-8 sm:p-6">
-      <section className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
-        <div className="absolute -left-20 -top-20 h-48 w-48 rounded-full bg-cyan-400/20 blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
-        
-        <div className="relative z-10">
+    <div className="flex min-h-[calc(100vh-9rem)] items-center justify-center px-4 py-12 sm:px-6">
+      <div className="w-full max-w-md">
+        <AuthPanel>
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Create account</h1>
-            <p className="mt-2 text-sm text-slate-500">Register to access your patient portal.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700">Patient access</p>
+            <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900">Create account</h1>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">Register once to submit intake and follow live queue status.</p>
           </div>
-          
+
           <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">Full Name</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="signup-name">
+                Full name
+              </label>
               <input
+                id="signup-name"
                 type="text"
                 autoComplete="name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 placeholder="Jane Doe"
-                className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
+                className={fieldClass}
               />
             </div>
-            
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">Email Address</label>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="signup-email">
+                Email
+              </label>
               <input
+                id="signup-email"
                 type="email"
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="name@example.com"
-                className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
+                className={fieldClass}
               />
             </div>
-            
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">Password</label>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="signup-password">
+                Password
+              </label>
               <input
+                id="signup-password"
                 type="password"
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
+                placeholder="At least 6 characters"
+                className={fieldClass}
               />
             </div>
-            
+
             {error ? (
-              <div className="rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-sm text-rose-700 backdrop-blur-sm">
-                {error}
-              </div>
+              <div className="rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-sm text-rose-800">{error}</div>
             ) : null}
-            
+
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-3.5 font-semibold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:pointer-events-none disabled:opacity-70"
+              className="mt-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-600/25 transition hover:-translate-y-0.5 hover:shadow-cyan-500/35 disabled:pointer-events-none disabled:opacity-65"
             >
-              {loading ? "Creating account…" : "Register"}
+              {loading ? "Creating…" : "Create account"}
             </button>
           </form>
-          
-          <div className="mt-8 text-center text-sm text-slate-600">
-            Already have an account?{" "}
-            <Link to="/login" className="font-semibold text-cyan-600 transition-colors hover:text-cyan-800 hover:underline">
-              Log in
+
+          <p className="mt-8 text-center text-sm text-slate-600">
+            Already registered?{" "}
+            <Link to="/login" className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline">
+              Sign in
             </Link>
-          </div>
-        </div>
-      </section>
+          </p>
+        </AuthPanel>
+      </div>
     </div>
   );
 }

@@ -50,6 +50,38 @@ function getResourcePressure(capacity) {
   };
 }
 
+function manualOverrideActive(patient) {
+  const raw = patient.manualPriorityOverride?.score;
+  return raw !== null && raw !== undefined && Number.isFinite(Number(raw));
+}
+
+/** Mutates patient.bedType + patient.urgencyScore from engine (respects staff manual override for score only). */
+async function recomputeDerivedQueueFields(patient) {
+  const waitMinutes = patient.queuedAt
+    ? Math.max(0, Math.floor((Date.now() - patient.queuedAt.getTime()) / 60000))
+    : 0;
+  const capacity = await SystemState.findOne({ key: "default" });
+  const { icuPressure, generalPressure } = getResourcePressure(capacity);
+
+  const vitalsBoost = vitalSeverityBoost(patient);
+  const derivedSeverity = Math.min(100, Number(patient.severity || 0) + vitalsBoost);
+
+  const { score, explanation, effectiveSeverity } = computePriorityScore({
+    severity: derivedSeverity,
+    symptoms: patient.symptoms,
+    waitMinutes,
+    icuPressure,
+    generalPressure,
+  });
+  patient.bedType = suggestBedType({ severity: effectiveSeverity });
+
+  const hasManualOverride = manualOverrideActive(patient);
+  const rawOverride = patient.manualPriorityOverride?.score;
+  patient.urgencyScore = hasManualOverride ? Number(rawOverride) : score;
+
+  return { vitalsBoost, explanation, effectiveSeverity, score, hasManualOverride };
+}
+
 function formatPatientListItem(p) {
   return {
     id: p._id,
@@ -120,6 +152,8 @@ export const patientService = {
   async getStatusForUser(userId) {
     const patient = await Patient.findOne({ userId });
     if (!patient) return { patient: null };
+    await recomputeDerivedQueueFields(patient);
+    await patient.save();
     return {
       patient: {
         tokenId: patient.tokenId,
@@ -189,6 +223,7 @@ export const patientService = {
         updatedBy: null,
         updatedAt: null,
       };
+      await recomputeDerivedQueueFields(patient);
       await patient.save();
     } else {
       const numeric = Number(score);
@@ -360,28 +395,7 @@ export const patientService = {
       patient.queuedAt = patient.queuedAt || new Date();
     }
 
-    const waitMinutes = patient.queuedAt
-      ? Math.max(0, Math.floor((Date.now() - patient.queuedAt.getTime()) / 60000))
-      : 0;
-    const capacity = await SystemState.findOne({ key: "default" });
-    const { icuPressure, generalPressure } = getResourcePressure(capacity);
-
-    const vitalsBoost = vitalSeverityBoost(patient);
-    const derivedSeverity = Math.min(100, Number(patient.severity || 0) + vitalsBoost);
-
-    const { score, explanation, effectiveSeverity } = computePriorityScore({
-      severity: derivedSeverity,
-      symptoms: patient.symptoms,
-      waitMinutes,
-      icuPressure,
-      generalPressure,
-    });
-    const bedType = suggestBedType({ severity: effectiveSeverity });
-
-    const overrideScore = Number(patient.manualPriorityOverride?.score);
-    const hasManualOverride = Number.isFinite(overrideScore);
-    patient.urgencyScore = hasManualOverride ? overrideScore : score;
-    patient.bedType = bedType;
+    const { vitalsBoost, explanation, hasManualOverride } = await recomputeDerivedQueueFields(patient);
     await patient.save();
 
     return {

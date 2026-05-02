@@ -2,13 +2,29 @@ const base = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const TOKEN_KEY = "token";
 
+function storageGet(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function storageSet(key, value) {
+  try {
+    if (value === null || value === undefined) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
+  } catch {
+    /* ignore quota / privacy mode */
+  }
+}
+
 export function setAuthToken(token) {
-  if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
+  storageSet(TOKEN_KEY, token || null);
 }
 
 export function getAuthToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return storageGet(TOKEN_KEY);
 }
 
 export async function api(path, options = {}) {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { api, setAuthToken } from "../lib/api.js";
 import { parseJwtPayload } from "../lib/jwt.js";
+import { AuthPanel, fieldClass } from "../components/PageChrome.jsx";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -43,76 +44,75 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 py-8 sm:p-6">
-      <section className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/20 bg-white/70 p-6 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-10">
-        <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-cyan-400/20 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
-        
-        <div className="relative z-10">
+    <div className="flex min-h-[calc(100vh-9rem)] items-center justify-center px-4 py-12 sm:px-6">
+      <div className="w-full max-w-md">
+        <AuthPanel>
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</h1>
-            <p className="mt-2 text-sm text-slate-500">Sign in to your hospital access portal.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700">SmartHospital</p>
+            <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900">Welcome back</h1>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">Sign in to the patient portal or staff workspace.</p>
           </div>
-          
+
           <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">Email Address</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="login-email">
+                Email
+              </label>
               <input
+                id="login-email"
                 type="email"
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="name@example.com"
-                className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
+                className={fieldClass}
               />
             </div>
-            
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-slate-700">Password</label>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="login-password">
+                Password
+              </label>
               <input
+                id="login-password"
                 type="password"
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
+                className={fieldClass}
               />
             </div>
-            
+
             {error ? (
-              <div className="rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-sm text-rose-700 backdrop-blur-sm">
-                {error}
-              </div>
+              <div className="rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-sm text-rose-800">{error}</div>
             ) : null}
-            
+
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-3.5 font-semibold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:pointer-events-none disabled:opacity-70"
+              className="mt-2 w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-600/25 transition hover:-translate-y-0.5 hover:shadow-cyan-500/35 disabled:pointer-events-none disabled:opacity-65"
             >
-              {loading ? "Authenticating…" : "Sign In"}
+              {loading ? "Signing in…" : "Sign in"}
             </button>
           </form>
 
-          <div className="mt-5 rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50/80 to-blue-50/70 p-4 shadow-sm">
+          <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50/80 p-4 ring-1 ring-slate-100/90">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-cyan-900">Demo Accounts</p>
-              <span className="rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[11px] font-medium text-cyan-700">
-                Quick Access
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600">Demo accounts</p>
+              <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500 shadow-sm ring-1 ring-slate-200">
+                Sandbox
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-600">Choose a role to auto-fill login credentials.</p>
-            <div className="mt-3 space-y-2">
+            <p className="mt-2 text-xs text-slate-500">Tap to autofill credentials for quick testing.</p>
+            <div className="mt-4 space-y-3">
               {demoAccounts.map((account) => (
-                <div
-                  key={account.role}
-                  className="rounded-xl border border-cyan-100 bg-white/90 p-3"
-                >
-                  <div className="text-sm text-slate-700">
-                    <div className="font-semibold text-slate-800">{account.role} Demo</div>
-                    <div className="mt-0.5 text-xs sm:text-sm">{account.email} / {account.password}</div>
+                <div key={account.role} className="rounded-xl border border-white bg-white p-3 shadow-sm ring-1 ring-slate-100/80">
+                  <div className="text-xs text-slate-600">
+                    <div className="font-semibold text-slate-900">{account.role}</div>
+                    <div className="mt-0.5 font-mono text-[11px] sm:text-xs">{account.email}</div>
                   </div>
                   <button
                     type="button"
@@ -120,25 +120,23 @@ export function LoginPage() {
                       setEmail(account.email);
                       setPassword(account.password);
                     }}
-                    className={`mt-3 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition ${
-                      roleButtonStyles[account.role]
-                    }`}
+                    className={`mt-3 w-full rounded-lg border px-3 py-2 text-xs font-bold transition ${roleButtonStyles[account.role]}`}
                   >
-                    Login as {account.role}
+                    Use {account.role} demo
                   </button>
                 </div>
               ))}
             </div>
           </div>
-          
-          <div className="mt-8 text-center text-sm text-slate-600">
-            Don't have an account yet?{" "}
-            <Link to="/signup" className="font-semibold text-cyan-600 transition-colors hover:text-cyan-800 hover:underline">
-              Register here
+
+          <p className="mt-8 text-center text-sm text-slate-600">
+            Need an account?{" "}
+            <Link to="/signup" className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline">
+              Register
             </Link>
-          </div>
-        </div>
-      </section>
+          </p>
+        </AuthPanel>
+      </div>
     </div>
   );
 }

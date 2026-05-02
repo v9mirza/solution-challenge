@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, getAuthToken } from "../lib/api.js";
+import { PageBreadcrumb } from "../components/PageChrome.jsx";
 
 export function StaffDashboardPage() {
   const [capacity, setCapacity] = useState(null);
@@ -206,34 +207,41 @@ export function StaffDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-cyan-200 border-t-cyan-600"></div>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+        <div className="relative h-12 w-12">
+          <div className="absolute inset-0 animate-ping rounded-full bg-cyan-400/20" />
+          <div className="relative flex h-full w-full items-center justify-center rounded-2xl border border-white/80 bg-white shadow-md">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-cyan-600" />
+          </div>
+        </div>
+        <p className="text-sm font-medium text-slate-500">Loading command center…</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-10">
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-2xl sm:rounded-3xl sm:p-8">
+    <div className="min-w-0 space-y-6 pb-10 sm:space-y-8">
+      <PageBreadcrumb items={[{ label: "Home", to: "/" }, { label: "Staff dashboard" }]} />
+
+      <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-5 text-white shadow-2xl ring-1 ring-white/10 sm:rounded-3xl sm:p-8">
         <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/20 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-black tracking-tight sm:text-4xl">Staff Dashboard</h1>
-            <p className="mt-2 text-slate-300">Command Center for intelligent triage and capacity management.</p>
+        <div className="relative z-10 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-black tracking-tight sm:text-4xl">Staff dashboard</h1>
+            <p className="mt-2 text-pretty text-sm text-slate-300 sm:text-base">Capacity, roster, and ranked patient queue.</p>
           </div>
           {error ? (
-            <div className="rounded-lg bg-rose-500/20 px-4 py-2 font-medium text-rose-200 backdrop-blur-md border border-rose-500/30">
+            <div className="w-full shrink-0 rounded-lg border border-rose-500/30 bg-rose-500/20 px-4 py-2 text-sm font-medium text-rose-100 backdrop-blur-md sm:max-w-md sm:text-rose-200">
               {error}
             </div>
           ) : null}
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Capacity Load */}
-        <div className="lg:col-span-1 rounded-2xl border border-slate-200/60 bg-white/70 p-6 shadow-xl backdrop-blur-xl">
+        <div className="min-w-0 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-xl shadow-slate-900/[0.04] backdrop-blur-xl sm:p-6 lg:col-span-1">
           <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
             <div className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></div>
             System Capacity Load
@@ -272,9 +280,9 @@ export function StaffDashboardPage() {
 
         {/* Update Bed Counts */}
         {capacity ? (
-          <div className="lg:col-span-2 rounded-2xl border border-slate-200/60 bg-white/70 p-6 shadow-xl backdrop-blur-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900">Update Capacity</h2>
+          <div className="min-w-0 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-xl shadow-slate-900/[0.04] backdrop-blur-xl sm:p-6 lg:col-span-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-lg font-bold text-slate-900">Update capacity</h2>
               {bedMessage && (
                 <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
                   {bedMessage}
@@ -316,9 +324,12 @@ export function StaffDashboardPage() {
                   />
                 </label>
               </div>
-              <div className="mt-5 flex sm:justify-end">
-                <button type="submit" className="w-full rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-auto">
-                  Save Changes
+              <div className="mt-5 flex justify-stretch sm:justify-end">
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg sm:w-auto"
+                >
+                  Save changes
                 </button>
               </div>
             </form>
@@ -327,10 +338,10 @@ export function StaffDashboardPage() {
       </div>
 
       {/* Staff Management */}
-      <div className="rounded-2xl border border-slate-200/60 bg-white/70 p-6 shadow-xl backdrop-blur-xl">
-        <h2 className="text-lg font-bold text-slate-900">Staff Management</h2>
-        
-        <form onSubmit={createStaffUser} className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="min-w-0 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-xl shadow-slate-900/[0.04] backdrop-blur-xl sm:p-6">
+        <h2 className="text-lg font-bold text-slate-900">Staff governance</h2>
+
+        <form onSubmit={createStaffUser} className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <input
             placeholder="Full Name" required value={staffForm.fullName}
             onChange={(e) => setStaffForm((f) => ({ ...f, fullName: e.target.value }))}
@@ -346,8 +357,11 @@ export function StaffDashboardPage() {
             onChange={(e) => setStaffForm((f) => ({ ...f, password: e.target.value }))}
             className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-2.5 text-slate-900 outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
           />
-          <button type="submit" className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-2.5 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 sm:w-auto">
-            Create Staff
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-blue-700 px-4 py-2.5 font-bold text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:shadow-cyan-500/40 md:col-span-2 xl:col-span-1"
+          >
+            Create staff
           </button>
         </form>
         
@@ -358,8 +372,8 @@ export function StaffDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200/60 bg-white shadow-sm">
-          <table className="w-full text-sm text-left">
+        <div className="mt-6 -mx-1 overflow-x-auto overscroll-x-contain rounded-xl border border-slate-200/60 bg-white shadow-sm sm:mx-0">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-bold">Name</th>
@@ -386,7 +400,7 @@ export function StaffDashboardPage() {
                       type="password" placeholder="New password" minLength={6}
                       value={resetPasswordByUser[u.id] || ""}
                       onChange={(e) => setResetPasswordByUser((prev) => ({ ...prev, [u.id]: e.target.value }))}
-                      className="w-40 rounded-lg border border-slate-200 px-3 py-1.5 outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
+                      className="w-full max-w-[10rem] min-w-0 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -407,10 +421,15 @@ export function StaffDashboardPage() {
       </div>
 
       {/* Queue */}
-      <div className="rounded-2xl border border-slate-200/60 bg-white/70 p-6 shadow-xl backdrop-blur-xl">
-        <h2 className="text-lg font-bold text-slate-900">Live Patient Queue</h2>
-        
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="min-w-0 rounded-3xl border border-white/70 bg-white/80 p-5 shadow-xl shadow-slate-900/[0.04] backdrop-blur-xl sm:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-slate-900">Live patient queue</h2>
+            <p className="mt-1 text-pretty text-sm text-slate-500">Sorted by AI symptom % — lifecycle and overrides apply here.</p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5 xl:gap-4">
           <input
             placeholder="Search name, email, token..." value={queueSearch} onChange={(e) => setQueueSearch(e.target.value)}
             className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-2 text-slate-900 outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
@@ -436,10 +455,13 @@ export function StaffDashboardPage() {
             <option value="cancelled">Cancelled</option>
           </select>
           <input
-            type="number" min="0" max="100" placeholder="Min Urgency (0-100)" value={queueUrgencyMin} onChange={(e) => setQueueUrgencyMin(e.target.value)}
+            type="number" min="0" max="100" placeholder="Min priority score" value={queueUrgencyMin} onChange={(e) => setQueueUrgencyMin(e.target.value)}
             className="w-full rounded-xl border border-slate-300/80 bg-white/50 px-4 py-2 text-slate-900 outline-none transition-all focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10"
           />
-          <button onClick={exportCsv} className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 sm:w-auto">
+          <button
+            onClick={exportCsv}
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 sm:col-span-2 xl:col-span-1"
+          >
             Export CSV
           </button>
         </div>
@@ -454,12 +476,12 @@ export function StaffDashboardPage() {
             <p className="mt-3 font-medium text-slate-600">No patients currently in queue.</p>
           </div>
         ) : (
-          <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200/60 bg-white shadow-sm">
-            <table className="w-full text-sm text-left">
+          <div className="mt-6 -mx-1 overflow-x-auto overscroll-x-contain rounded-xl border border-slate-200/60 bg-white shadow-sm sm:mx-0">
+            <table className="w-full min-w-[900px] text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                 <tr>
-                  <th className="px-4 py-3 font-bold">Urgency</th>
-                  <th className="px-4 py-3 font-bold">Severity</th>
+                  <th className="px-4 py-3 font-bold">Priority</th>
+                  <th className="px-4 py-3 font-bold">Symptoms (AI)</th>
                   <th className="px-4 py-3 font-bold">Patient</th>
                   <th className="px-4 py-3 font-bold">Bed</th>
                   <th className="px-4 py-3 font-bold">Lifecycle</th>
@@ -544,27 +566,34 @@ export function StaffDashboardPage() {
 
       {/* Modal */}
       {selectedPatientForSymptoms && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-900">
-                Symptoms for {selectedPatientForSymptoms.fullName || selectedPatientForSymptoms.tokenId}
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:max-h-[85vh] sm:rounded-2xl">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
+              <h3 className="min-w-0 flex-1 pr-2 text-base font-bold leading-snug text-slate-900 sm:text-lg">
+                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500">Symptoms</span>
+                <span className="break-words">{selectedPatientForSymptoms.fullName || selectedPatientForSymptoms.tokenId}</span>
               </h3>
-              <button onClick={() => setSelectedPatientForSymptoms(null)} className="text-slate-400 hover:text-slate-600">
+              <button
+                type="button"
+                onClick={() => setSelectedPatientForSymptoms(null)}
+                className="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700"
+                aria-label="Close"
+              >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto px-6 py-6">
+            <div className="max-h-[50vh] overflow-y-auto px-4 py-5 sm:max-h-[60vh] sm:px-6 sm:py-6">
               <div className="rounded-xl bg-slate-50 p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap font-medium">
                 {selectedPatientForSymptoms.symptoms || "No symptoms recorded."}
               </div>
             </div>
-            <div className="border-t border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-end">
+            <div className="flex justify-end border-t border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6">
               <button
+                type="button"
                 onClick={() => setSelectedPatientForSymptoms(null)}
-                className="rounded-xl bg-slate-900 px-5 py-2 text-sm font-bold text-white transition hover:bg-slate-800"
+                className="w-full rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 sm:w-auto sm:py-2"
               >
                 Close
               </button>
